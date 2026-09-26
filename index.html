@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ハートをみんなで わけっこ！ 💖</title>
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@700;800&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'M PLUS Rounded 1c', sans-serif;
+    }
+    body {
+      background-color: #fff0f5;
+      background-image: radial-gradient(#ffb6c1 15%, transparent 15%);
+      background-size: 20px 20px;
+      margin: 0;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #555;
+      position: relative;
+      overflow-x: hidden;
+    }
+    .card {
+      background: white;
+      border-radius: 25px;
+      padding: 20px 25px;
+      box-shadow: 0 10px 25px rgba(255, 105, 180, 0.2);
+      border: 4px solid #ffb6c1;
+      max-width: 750px;
+      width: 100%;
+      text-align: center;
+      position: relative;
+    }
+    h1 {
+      color: #ff477e;
+      font-size: 24px;
+      margin-top: 0;
+      margin-bottom: 15px;
+      text-shadow: 2px 2px 0px #ffdeeb;
+    }
+    .formula-box {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 6px;
+      font-size: 22px;
+      font-weight: bold;
+      color: #ff477e;
+      background: #fff5f8;
+      padding: 12px;
+      border-radius: 20px;
+      border: 2px solid #ffb6c1;
+      margin-bottom: 12px;
+    }
+
+    /* 選択式セレクトボックスのスタイル */
+    select {
+      font-family: inherit;
+      font-size: 22px;
+      font-weight: bold;
+      text-align: center;
+      border: 3px solid #ff85a1;
+      border-radius: 15px;
+      outline: none;
+      color: #ff477e;
+      background: #fff;
+      padding: 5px 8px;
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+    select:focus {
+      border-color: #ff0055;
+      box-shadow: 0 0 8px rgba(255, 0, 85, 0.3);
+    }
+    .ans-select { background-color: #fff0f5; }
+    .rem-box {
+      width: 55px;
+      height: 45px;
+      line-height: 40px;
+      background-color: #eccc68;
+      border: 3px solid #ffa502;
+      color: #d35400;
+      border-radius: 15px;
+      display: inline-block;
+      font-size: 22px;
+    }
+
+    /* ボタンエリア */
+    .btn-area {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+    }
+    .btn-reset {
+      border: none;
+      padding: 8px 16px;
+      font-size: 15px;
+      font-weight: bold;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.1s;
+      color: white;
+    }
+    .btn-answer-reset {
+      background: #ff477e;
+      box-shadow: 0 4px 0 #d63062;
+    }
+    .btn-all-reset {
+      background: #a55eea;
+      box-shadow: 0 4px 0 #8854d0;
+    }
+    .btn-reset:active {
+      transform: translateY(4px);
+      box-shadow: none;
+    }
+
+    /* 子どもたちエリア */
+    .kids-area {
+      min-height: 45px;
+      margin-bottom: 15px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      font-size: 26px;
+      background: #fff;
+      padding: 6px;
+      border-radius: 15px;
+      border: 2px stroke #ffd32a;
+    }
+    .kid-tag {
+      background: #ffeaa7;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 15px;
+      color: #d35400;
+      font-weight: bold;
+    }
+
+    /* ステージ */
+    .stage {
+      min-height: 180px;
+      max-height: 420px;
+      overflow-y: auto;
+      background: #fafafa;
+      border-radius: 20px;
+      padding: 15px;
+      border: 2px dashed #ffb6c1;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    /* グループ（おうち） */
+    .group {
+      border: 3px dashed #ff85a1;
+      background-color: #fff0f5;
+      border-radius: 18px;
+      padding: 10px 8px 6px 8px;
+      display: flex;
+      gap: 4px;
+      align-items: center;
+      justify-content: center;
+      animation: popIn 0.3s ease;
+      position: relative;
+    }
+    .group-label {
+      position: absolute;
+      top: -10px;
+      left: 8px;
+      background: #ff85a1;
+      color: white;
+      font-size: 11px;
+      padding: 1px 6px;
+      border-radius: 10px;
+    }
+    .group.incomplete {
+      border-color: #ffa502;
+      background-color: #fffaf0;
+    }
+    .group.remainder-group {
+      border-color: #70a1ff;
+      background-color: #f0f8ff;
+    }
+    .group.remainder-too-much {
+      border-color: #ff9f43;
+      background-color: #fff3e0;
+      animation: shake 0.4s ease;
+    }
+
+    /* ハートスタイル */
+    .heart {
+      font-size: 26px;
+      line-height: 1;
+      transition: all 0.2s;
+      user-select: none;
+    }
+    .heart.white {
+      color: #e0e0e0;
+      text-shadow: 0 0 2px #b0b0b0;
+    }
+    .heart.colored {
+      color: #ff477e;
+      animation: pulse 0.3s ease;
+    }
+    .heart.dashed {
+      color: #ffa502;
+      opacity: 0.4;
+    }
+    .heart.remainder {
+      color: #54a0ff;
+      animation: bounce 0.8s infinite alternate;
+    }
+    .heart.warn {
+      color: #ff9f43;
+      animation: bounce 0.5s infinite alternate;
+    }
+
+    /* メッセージ */
+    .message-box {
+      font-size: 18px;
+      font-weight: bold;
+      min-height: 40px;
+      color: #ff477e;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .message-box.blue { color: #10ac84; }
+    .message-box.orange { color: #ee5253; }
+    .message-box.warn { color: #d35400; }
+
+    /* 正解の〇アニメーション表示用オーバーレイ */
+    .correct-overlay {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 160px;
+      color: #ff3366;
+      font-weight: bold;
+      pointer-events: none;
+      opacity: 0;
+      z-index: 100;
+      text-shadow: 0 0 20px rgba(255, 105, 180, 0.6);
+    }
+
+    .correct-overlay.play-anim {
+      animation: maruPopFade 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+
+    @keyframes maruPopFade {
+      0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.3);
+      }
+      30% {
+        opacity: 0.9;
+        transform: translate(-50%, -50%) scale(1.1);
+      }
+      50% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.0);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(1.2);
+      }
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0.8); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    @keyframes bounce {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-5px); }
+    }
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.25); }
+      100% { transform: scale(1); }
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-4px); }
+      40%, 80% { transform: translateX(4px); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <!-- 正解時の〇表示要素 -->
+  <div id="correctOverlay" class="correct-overlay">◯</div>
+
+  <h1>💖 ハートをみんなで わけっこ！ 💖</h1>
+  
+  <div class="formula-box">
+    <select id="total"></select>
+    <span>÷</span>
+    <select id="divisor"></select>
+    <span>＝</span>
+    <select id="quotient" class="ans-select"></select>
+    <span>あまり</span>
+    <div id="remainder" class="rem-box">？</div>
+  </div>
+
+  <div class="btn-area">
+    <button class="btn-reset btn-answer-reset" onclick="resetAnswerOnly()">🔄 こたえをけす</button>
+    <button class="btn-reset btn-all-reset" onclick="resetAll()">💥 ぜんぶけす</button>
+  </div>
+
+  <div class="kids-area" id="kidsArea"></div>
+
+  <div class="stage" id="stage"></div>
+
+  <div class="message-box" id="message"></div>
+</div>
+
+<script>
+  const totalSelect = document.getElementById('total');
+  const divisorSelect = document.getElementById('divisor');
+  const quotientSelect = document.getElementById('quotient');
+  const remainderBox = document.getElementById('remainder');
+  const kidsArea = document.getElementById('kidsArea');
+  const stage = document.getElementById('stage');
+  const message = document.getElementById('message');
+  const correctOverlay = document.getElementById('correctOverlay');
+
+  const KID_EMOJIS = ['👦', '👧', '🧒', '👶', '🧑', '🐱', '🐰', '🐻', '🐶', '🦊'];
+
+  // ドロップダウンの選択肢を初期化
+  function initSelects() {
+    // 割られる数 (未選択 + 1〜99)
+    totalSelect.innerHTML = '<option value="">？</option>';
+    for (let i = 1; i <= 99; i++) {
+      totalSelect.add(new Option(i, i));
+    }
+
+    // 割る数 (未選択 + 1〜10)
+    divisorSelect.innerHTML = '<option value="">？</option>';
+    for (let i = 1; i <= 10; i++) {
+      divisorSelect.add(new Option(i, i));
+    }
+
+    // 商 (?) (未選択 + 0〜99)
+    quotientSelect.innerHTML = '<option value="">？</option>';
+    for (let i = 0; i <= 99; i++) {
+      quotientSelect.add(new Option(i, i));
+    }
+  }
+
+  // 答え（商）だけクリア
+  function resetAnswerOnly() {
+    quotientSelect.value = '';
+    render();
+  }
+
+  // 完全リセット（問題もすべて初期化）
+  function resetAll() {
+    totalSelect.value = '';
+    divisorSelect.value = '';
+    quotientSelect.value = '';
+    render();
+  }
+
+  // 〇のアニメーション再生
+  function showMaruAnimation() {
+    correctOverlay.classList.remove('play-anim');
+    void correctOverlay.offsetWidth; // リフロー発生
+    correctOverlay.classList.add('play-anim');
+  }
+
+  function render() {
+    const totalVal = totalSelect.value;
+    const divisorVal = divisorSelect.value;
+    const qVal = quotientSelect.value;
+
+    const total = parseInt(totalVal);
+    const divisor = parseInt(divisorVal);
+    const q = parseInt(qVal);
+
+    stage.innerHTML = '';
+    kidsArea.innerHTML = '';
+    message.innerText = '';
+    message.className = 'message-box';
+
+    // 割られる数が未選択の場合
+    if (totalVal === '' || isNaN(total) || total <= 0) {
+      remainderBox.innerText = '？';
+      stage.innerHTML = '<span style="color:#aaa;">かずを えらんでね！</span>';
+      kidsArea.innerHTML = '<span style="color:#aaa;">まずは「ぜんぶの かず」を えらぼう！</span>';
+      return;
+    }
+
+    // 1. 子どもたちの表示
+    if (!isNaN(divisor) && divisor > 0) {
+      let kidsHtml = '<span class="kid-tag">分けるにんずう:</span> ';
+      for (let i = 0; i < divisor; i++) {
+        kidsHtml += (KID_EMOJIS[i] || '👶') + ' ';
+      }
+      kidsArea.innerHTML = kidsHtml;
+    } else {
+      kidsArea.innerHTML = '<span style="color:#aaa;">なんにんで 分ける？（割る数をえらんでね）</span>';
+    }
+
+    // 2. 商（？）が未選択、または割る数が未選択の場合：白いハートを並べるだけ
+    if (isNaN(divisor) || divisor <= 0 || qVal === '' || isNaN(q)) {
+      remainderBox.innerText = '？';
+      for (let i = 0; i < total; i++) {
+        const heart = document.createElement('span');
+        heart.className = 'heart white';
+        heart.innerText = '♥';
+        stage.appendChild(heart);
+      }
+      if (isNaN(divisor) || divisor <= 0) {
+        message.innerText = `ぜんぶで ${total}こ あるよ！なんにんで 分ける？`;
+      } else {
+        message.innerText = `ぜんぶで ${total}こ あるよ！1人「なんこずつ」に 分ける？`;
+      }
+      return;
+    }
+
+    // 3. 商が入力された後の計算＆視覚化
+    const coloredCount = divisor * q;
+    const rem = total - coloredCount;
+
+    // A. ぴったり、またはあまりが出るとき
+    if (coloredCount <= total) {
+      remainderBox.innerText = rem;
+
+      // 商の数だけセットを作る
+      for (let g = 0; g < q; g++) {
+        const group = createGroupContainer(`セット ${g + 1}`);
+        for (let h = 0; h < divisor; h++) {
+          const heart = document.createElement('span');
+          heart.className = 'heart colored';
+          heart.innerText = '♥';
+          group.appendChild(heart);
+        }
+        stage.appendChild(group);
+      }
+
+      // あまった分（あまり）のハート
+      if (rem > 0) {
+        const canMakeMoreSets = Math.floor(rem / divisor);
+
+        if (canMakeMoreSets > 0) {
+          // 不正解：まだセットが作れる（あまりが大きすぎる）
+          const remGroup = createGroupContainer('あまりが おおきいよ！', 'remainder-too-much');
+          for (let r = 0; r < rem; r++) {
+            const heart = document.createElement('span');
+            heart.className = 'heart warn';
+            heart.innerText = '♥';
+            remGroup.appendChild(heart);
+          }
+          stage.appendChild(remGroup);
+
+          message.innerText = `💡 まだ あと ${canMakeMoreSets}セット つくれるよ！商を ふやしてみよう！`;
+          message.classList.add('warn');
+        } else {
+          // 🎉 正解：正しくあまりが求まった！
+          showMaruAnimation();
+
+          const remGroup = createGroupContainer('あまり', 'remainder-group');
+          for (let r = 0; r < rem; r++) {
+            const heart = document.createElement('span');
+            heart.className = 'heart remainder';
+            heart.innerText = '♥';
+            remGroup.appendChild(heart);
+          }
+          stage.appendChild(remGroup);
+
+          message.innerText = `✨ 1人に ${q}こずつ 分けると、${rem}こ あまるね！`;
+          message.classList.add('blue');
+        }
+      } else {
+        // 🎉 正解：ぴったり割り切れた！
+        showMaruAnimation();
+
+        message.innerText = '🎉 ぴったり！あまりなし（あまり 0）だね！';
+        message.classList.add('blue');
+      }
+
+    } else {
+      // B. 不正解：ハートが足りないとき (商が大きすぎる場合)
+      remainderBox.innerText = '0';
+      const missingCount = coloredCount - total;
+      const fullGroups = Math.floor(total / divisor);
+      let drawnHearts = 0;
+
+      // 完全につくれるグループ
+      for (let g = 0; g < fullGroups; g++) {
+        const group = createGroupContainer(`セット ${g + 1}`);
+        for (let h = 0; h < divisor; h++) {
+          const heart = document.createElement('span');
+          heart.className = 'heart colored';
+          heart.innerText = '♥';
+          group.appendChild(heart);
+          drawnHearts++;
+        }
+        stage.appendChild(group);
+      }
+
+      // 不足している最後のグループ（実物ピンク + 不足破線♡）
+      const incompleteGroup = createGroupContainer('たりないよ！', 'incomplete');
+      const realLeft = total - drawnHearts;
+
+      for (let i = 0; i < realLeft; i++) {
+        const heart = document.createElement('span');
+        heart.className = 'heart colored';
+        heart.innerText = '♥';
+        incompleteGroup.appendChild(heart);
+      }
+      for (let i = 0; i < missingCount; i++) {
+        const heart = document.createElement('span');
+        heart.className = 'heart dashed';
+        heart.innerText = '♡';
+        incompleteGroup.appendChild(heart);
+      }
+      stage.appendChild(incompleteGroup);
+
+      message.innerText = `💧 ${missingCount}こ たらないよ！ (${q}こずつは 多すぎるね)`;
+      message.classList.add('orange');
+    }
+  }
+
+  function createGroupContainer(labelText, extraClass = '') {
+    const div = document.createElement('div');
+    div.className = `group ${extraClass}`;
+    if (labelText) {
+      const label = document.createElement('span');
+      label.className = 'group-label';
+      label.innerText = labelText;
+      div.appendChild(label);
+    }
+    return div;
+  }
+
+  // イベント登録
+  totalSelect.addEventListener('change', render);
+  divisorSelect.addEventListener('change', render);
+  quotientSelect.addEventListener('change', render);
+
+  // 初期化実行
+  initSelects();
+  render();
+</script>
+</body>
+</html>
