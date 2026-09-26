@@ -77,6 +77,36 @@
       margin-bottom: 12px;
       text-shadow: 2px 2px 0 #e71d36, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000;
       letter-spacing: 1px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+
+    /* タイトル用コイン画像 */
+    .title-coin-img {
+      height: 24px;
+      width: auto;
+      vertical-align: middle;
+      object-fit: contain;
+    }
+
+    /* 見出しインライン用コイン画像 */
+    .inline-coin-img {
+      height: 16px;
+      width: auto;
+      vertical-align: -2px;
+      margin: 0 2px;
+      object-fit: contain;
+    }
+
+    /* グリッドセル用コイン画像 */
+    .coin-cell-img {
+      width: 80%;
+      height: 80%;
+      object-fit: contain;
+      pointer-events: none;
     }
 
     .formula-box {
@@ -267,7 +297,6 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: clamp(14px, 4vw, 18px);
       user-select: none;
       transition: all 0.2s;
       border: 2px solid transparent;
@@ -398,7 +427,7 @@
       animation: blockPunch 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
     }
 
-    /* アイテム出現領域（2倍の160pxへ拡張） */
+    /* アイテム出現領域 */
     .item-pop-wrapper {
       position: absolute;
       top: 0;
@@ -485,7 +514,7 @@
       100% { transform: translateY(0); filter: brightness(0.7); }
     }
 
-    /* 拡大版ポップアップ（130px上方にポップ） */
+    /* 拡大版ポップアップ */
     @keyframes itemPopUpLarge {
       0% { transform: translateY(0) scale(0.2); opacity: 0; }
       50% { transform: translateY(-130px) scale(1.2); opacity: 1; filter: drop-shadow(0 0 15px rgba(255, 223, 0, 0.8)); }
@@ -521,7 +550,10 @@
     </div>
   </div>
 
-  <h1>🍄 マリオと わけっこ！<br>コインチャレンジ 🪙</h1>
+  <h1>
+    <span>🍄 マリオと わけっこ！</span>
+    <span>コインチャレンジ <img src="coin.png" class="title-coin-img" alt="コイン"></span>
+  </h1>
   
   <div class="formula-box">
     <select id="total" onchange="onNumberChange()"></select>
@@ -693,7 +725,12 @@
 
       const cell = document.createElement('div');
       cell.className = 'coin-cell';
-      cell.innerText = '🪙';
+      
+      const coinImg = document.createElement('img');
+      coinImg.src = 'coin.png';
+      coinImg.alt = 'コイン';
+      coinImg.className = 'coin-cell-img';
+      cell.appendChild(coinImg);
 
       if (groupSize && groupSize > 0) {
         const setIndex = Math.floor(i / groupSize);
@@ -741,7 +778,7 @@
     message.className = 'message-box';
 
     if (!isNaN(total) && total > 0) {
-      totalTitle.innerText = `${total}枚のコインを`;
+      totalTitle.innerHTML = `${total}枚のコイン<img src="coin.png" class="inline-coin-img" alt="コイン">を`;
       totalTitle.style.display = 'block';
       allHeartsArea.appendChild(createStrictCoinGrid(total));
     } else {
