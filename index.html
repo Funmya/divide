@@ -306,7 +306,7 @@
       line-height: 1.1;
     }
 
-    .all-hearts-area, .kids-area, .grouped-area {
+    .all-hearts-area, .grouped-area {
       min-height: 38px;
       width: 100%;
       display: flex;
@@ -314,21 +314,20 @@
       align-items: center;
     }
 
-    /* 1行5個の左詰めで配置するキャラクターエリア */
+    /* 1行5列固定のCSS Gridレイアウト */
     .kids-area {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: flex-start;
-      align-items: center;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
       gap: 8px;
       width: 100%;
     }
 
-    /* 少し大きめにしたキャラカード（5個並びに合わせたサイズ設計） */
+    /* キャラカード枠 */
     .char-card {
-      width: calc((100% - 32px) / 5);
-      max-width: 48px;
+      width: 100%;
       aspect-ratio: 1 / 1;
+      max-width: 52px;
+      margin: 0 auto;
       background: #ffffff;
       border: 2px solid #000;
       border-radius: 12px;
@@ -338,7 +337,6 @@
       box-shadow: 0 3px 0 #000;
       padding: 3px;
       overflow: hidden;
-      flex-shrink: 0;
     }
     .char-card img {
       width: 100%;
@@ -380,43 +378,32 @@
       animation: containerFade 1.8s forwards;
     }
 
-    .item-block {
-      width: 60px;
-      height: 60px;
-      background: #ff9f1c;
-      border: 4px solid #000;
-      border-radius: 10px;
-      box-shadow: inset -4px -4px 0 #c77700, inset 4px 4px 0 #ffeb3b, 0 6px 0 #000;
-      color: #ffffff;
-      font-size: 38px;
-      font-weight: 900;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-shadow: 2px 2px 0 #000;
+    /* 画像化したハテナブロック枠 */
+    .item-block-img {
+      width: 70px;
+      height: 70px;
+      object-fit: contain;
       position: relative;
       z-index: 2;
     }
 
-    .block-anim-container.play-anim .item-block {
+    .block-anim-container.play-anim .item-block-img {
       animation: blockPunch 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
     }
 
-    .item-pop {
-      font-size: 70px;
+    /* 画像化したポップアップ用コンテナ（スター/クッパシルエット） */
+    .item-pop-img {
+      width: 80px;
+      height: 80px;
+      object-fit: contain;
       position: absolute;
       top: 0;
       z-index: 1;
       transform: scale(0);
-      line-height: 1;
     }
 
-    .block-anim-container.play-correct .item-pop {
-      animation: itemPopUp 1.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.2s forwards;
-    }
-
-    .block-anim-container.play-wrong .item-pop {
-      filter: hue-rotate(180deg) saturate(1.8);
+    .block-anim-container.play-correct .item-pop-img,
+    .block-anim-container.play-wrong .item-pop-img {
       animation: itemPopUp 1.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.2s forwards;
     }
 
@@ -428,7 +415,7 @@
     @keyframes blockPunch {
       0% { transform: translateY(0); }
       40% { transform: translateY(-28px); }
-      100% { transform: translateY(0); background: #8d5b4c; box-shadow: inset -4px -4px 0 #5c3a30, 0 6px 0 #000; color: #5c3a30; text-shadow: none; }
+      100% { transform: translateY(0); filter: brightness(0.7); }
     }
     @keyframes itemPopUp {
       0% { transform: translateY(0) scale(0.2); opacity: 0; }
@@ -448,9 +435,10 @@
 <div class="card">
   <div id="correctCircleBg" class="correct-circle-bg"></div>
 
+  <!-- 演出アニメーション用領域 -->
   <div id="blockAnimContainer" class="block-anim-container">
-    <div id="itemBlock" class="item-block">？</div>
-    <div id="itemPop" class="item-pop">🌟</div>
+    <img id="itemBlockImg" class="item-block-img" src="question-block.png" alt="ハテナブロック">
+    <img id="itemPopImg" class="item-pop-img" src="star.png" alt="アイテム">
   </div>
 
   <h1>🍄 マリオと わけっこ！<br>コインチャレンジ 🪙</h1>
@@ -535,8 +523,7 @@
   const message = document.getElementById('message');
   
   const blockAnimContainer = document.getElementById('blockAnimContainer');
-  const itemBlock = document.getElementById('itemBlock');
-  const itemPop = document.getElementById('itemPop');
+  const itemPopImg = document.getElementById('itemPopImg');
   const correctCircleBg = document.getElementById('correctCircleBg');
 
   let audioCtx = null;
@@ -619,7 +606,6 @@
     for (let i = 1; i <= 99; i++) totalSelect.add(new Option(i, i));
 
     divisorSelect.innerHTML = '<option value="">？</option>';
-    // 選択肢を 99 まで復元
     for (let i = 1; i <= 99; i++) divisorSelect.add(new Option(i, i));
 
     quotientSelect.innerHTML = '<option value="">？</option>';
@@ -645,7 +631,7 @@
 
   function triggerCorrectAnimation() {
     blockAnimContainer.className = 'block-anim-container';
-    itemPop.innerText = '🌟';
+    itemPopImg.src = 'star.png'; // 正解時はスター画像
     
     void blockAnimContainer.offsetWidth;
     blockAnimContainer.classList.add('play-anim', 'play-correct');
@@ -659,7 +645,7 @@
 
   function triggerWrongAnimation() {
     blockAnimContainer.className = 'block-anim-container';
-    itemPop.innerText = '🍄';
+    itemPopImg.src = 'bowser-shadow.png'; // 不正解時はクッパのシルエット画像
 
     void blockAnimContainer.offsetWidth;
     blockAnimContainer.classList.add('play-anim', 'play-wrong');
@@ -752,7 +738,6 @@
       kidsTitle.style.display = 'block';
 
       for (let i = 0; i < divisor; i++) {
-        // CHARACTERSの要素数をループ（10人目＝マリオに戻る）
         const charInfo = CHARACTERS[i % CHARACTERS.length];
         const card = document.createElement('div');
         card.className = 'char-card';
