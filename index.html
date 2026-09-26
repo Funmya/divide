@@ -314,19 +314,27 @@
       align-items: center;
     }
 
-    /* 1行5列固定のCSS Gridレイアウト */
+    /* デフォルト（案内メッセージ用）：通常のフレックス表示 */
     .kids-area {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 48px;
       width: 100%;
     }
 
-    /* キャラカード枠 */
+    /* キャラクター配置時：1行5列のGrid表示 */
+    .kids-area.is-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+    }
+
+    /* キャラカード枠（サイズを拡大） */
     .char-card {
       width: 100%;
       aspect-ratio: 1 / 1;
-      max-width: 52px;
+      max-width: 64px;
       margin: 0 auto;
       background: #ffffff;
       border: 2px solid #000;
@@ -335,7 +343,7 @@
       align-items: center;
       justify-content: center;
       box-shadow: 0 3px 0 #000;
-      padding: 3px;
+      padding: 4px;
       overflow: hidden;
     }
     .char-card img {
@@ -378,7 +386,6 @@
       animation: containerFade 1.8s forwards;
     }
 
-    /* 画像化したハテナブロック枠 */
     .item-block-img {
       width: 70px;
       height: 70px;
@@ -391,7 +398,6 @@
       animation: blockPunch 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
     }
 
-    /* 画像化したポップアップ用コンテナ（スター/クッパシルエット） */
     .item-pop-img {
       width: 80px;
       height: 80px;
@@ -508,6 +514,10 @@
     { name: 'フォックス', img: 'fox.png' }
   ];
 
+  // MP3音声ファイルの準備
+  const correctAudio = new Audio('correct.mp3');
+  const wrongAudio = new Audio('wrong.mp3');
+
   const totalSelect = document.getElementById('total');
   const divisorSelect = document.getElementById('divisor');
   const quotientSelect = document.getElementById('quotient');
@@ -526,79 +536,11 @@
   const itemPopImg = document.getElementById('itemPopImg');
   const correctCircleBg = document.getElementById('correctCircleBg');
 
-  let audioCtx = null;
-
-  function initAudio() {
-    if (!audioCtx) {
-      const AudioContext = window.AudioContext || window.webkitAudioContext;
-      if (AudioContext) audioCtx = new AudioContext();
+  function playSound(audioObj) {
+    if (audioObj) {
+      audioObj.currentTime = 0;
+      audioObj.play().catch(e => console.log('Audio play error:', e));
     }
-    if (audioCtx && audioCtx.state === 'suspended') {
-      audioCtx.resume();
-    }
-  }
-
-  function playCorrectSound() {
-    initAudio();
-    if (!audioCtx) return;
-
-    const now = audioCtx.currentTime;
-    const bumpOsc = audioCtx.createOscillator();
-    const bumpGain = audioCtx.createGain();
-    bumpOsc.type = 'square';
-    bumpOsc.frequency.setValueAtTime(150, now);
-    bumpOsc.frequency.exponentialRampToValueAtTime(40, now + 0.1);
-    bumpGain.gain.setValueAtTime(0.3, now);
-    bumpGain.gain.linearRampToValueAtTime(0.01, now + 0.1);
-    bumpOsc.connect(bumpGain);
-    bumpGain.connect(audioCtx.destination);
-    bumpOsc.start(now);
-    bumpOsc.stop(now + 0.1);
-
-    const notes = [392.00, 523.25, 659.25, 783.99, 1046.50];
-    notes.forEach((freq, idx) => {
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.type = 'triangle';
-      osc.frequency.setValueAtTime(freq, now + 0.15 + idx * 0.07);
-      gain.gain.setValueAtTime(0, now + 0.15 + idx * 0.07);
-      gain.gain.linearRampToValueAtTime(0.2, now + 0.15 + idx * 0.07 + 0.02);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15 + idx * 0.07 + 0.22);
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-      osc.start(now + 0.15 + idx * 0.07);
-      osc.stop(now + 0.15 + idx * 0.07 + 0.22);
-    });
-  }
-
-  function playWrongSound() {
-    initAudio();
-    if (!audioCtx) return;
-
-    const now = audioCtx.currentTime;
-    const bumpOsc = audioCtx.createOscillator();
-    const bumpGain = audioCtx.createGain();
-    bumpOsc.type = 'square';
-    bumpOsc.frequency.setValueAtTime(150, now);
-    bumpOsc.frequency.exponentialRampToValueAtTime(40, now + 0.1);
-    bumpGain.gain.setValueAtTime(0.3, now);
-    bumpGain.gain.linearRampToValueAtTime(0.01, now + 0.1);
-    bumpOsc.connect(bumpGain);
-    bumpGain.connect(audioCtx.destination);
-    bumpOsc.start(now);
-    bumpOsc.stop(now + 0.1);
-
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.type = 'sawtooth';
-    osc.frequency.setValueAtTime(160, now + 0.15);
-    osc.frequency.setValueAtTime(110, now + 0.3);
-    gain.gain.setValueAtTime(0.2, now + 0.15);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.55);
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
-    osc.start(now + 0.15);
-    osc.stop(now + 0.55);
   }
 
   function initSelects() {
@@ -631,7 +573,7 @@
 
   function triggerCorrectAnimation() {
     blockAnimContainer.className = 'block-anim-container';
-    itemPopImg.src = 'star.png'; // 正解時はスター画像
+    itemPopImg.src = 'star.png';
     
     void blockAnimContainer.offsetWidth;
     blockAnimContainer.classList.add('play-anim', 'play-correct');
@@ -640,17 +582,17 @@
     void correctCircleBg.offsetWidth;
     correctCircleBg.classList.add('play-anim');
 
-    playCorrectSound();
+    playSound(correctAudio);
   }
 
   function triggerWrongAnimation() {
     blockAnimContainer.className = 'block-anim-container';
-    itemPopImg.src = 'bowser-shadow.png'; // 不正解時はクッパのシルエット画像
+    itemPopImg.src = 'bowser-shadow.png';
 
     void blockAnimContainer.offsetWidth;
     blockAnimContainer.classList.add('play-anim', 'play-wrong');
 
-    playWrongSound();
+    playSound(wrongAudio);
   }
 
   function createStrictCoinGrid(total, groupSize = null, maxGroups = null) {
@@ -737,6 +679,9 @@
       kidsTitle.innerText = `${divisor}人で分けると`;
       kidsTitle.style.display = 'block';
 
+      // キャラクターカード表示時はGrid表示を有効化
+      kidsArea.classList.add('is-grid');
+
       for (let i = 0; i < divisor; i++) {
         const charInfo = CHARACTERS[i % CHARACTERS.length];
         const card = document.createElement('div');
@@ -752,6 +697,8 @@
       }
     } else {
       kidsTitle.style.display = 'none';
+      // 案内メッセージ表示時はGrid表示を解除
+      kidsArea.classList.remove('is-grid');
       kidsArea.innerHTML = '<span style="color:#888; font-size:13px;">「わける にんずう（÷の みぎ）」を えらぼう！</span>';
     }
 
@@ -806,8 +753,6 @@
       message.innerText = `💦 あと ${missingCount}枚 コインが 足りないよ！`;
     }
   }
-
-  document.addEventListener('click', initAudio, { once: true });
 
   initSelects();
   render();
