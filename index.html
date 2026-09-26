@@ -57,7 +57,6 @@
       margin-bottom: 12px;
     }
 
-    /* 選択式セレクトボックスのスタイル */
     select {
       font-family: inherit;
       font-size: 22px;
@@ -121,19 +120,60 @@
       box-shadow: none;
     }
 
-    /* 子どもたちエリア */
+    /* 共通ステージ枠スタイル */
+    .display-section {
+      background: #fafafa;
+      border-radius: 20px;
+      padding: 12px;
+      border: 2px dashed #ffb6c1;
+    }
+
+    /* エリア間の演算子区切り */
+    .op-divider {
+      font-size: 28px;
+      font-weight: bold;
+      color: #ff477e;
+      margin: 8px 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+    }
+
+    /* 縦向きの＝アイコン（横線を並べたものを90度回転させて縦に2本並べる） */
+    .equal-vertical {
+      display: inline-flex;
+      flex-direction: row;
+      gap: 6px;
+      align-items: center;
+      justify-content: center;
+    }
+    .equal-vertical span {
+      display: block;
+      width: 5px;
+      height: 24px;
+      background-color: #ff477e;
+      border-radius: 3px;
+    }
+
+    /* 1. グレーのハートエリア */
+    .all-hearts-area {
+      min-height: 50px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* 2. 子どもたち（分ける人数）エリア */
     .kids-area {
       min-height: 45px;
-      margin-bottom: 15px;
       display: flex;
       justify-content: center;
       align-items: center;
       gap: 8px;
       font-size: 26px;
-      background: #fff;
-      padding: 6px;
-      border-radius: 15px;
-      border: 2px stroke #ffd32a;
     }
     .kid-tag {
       background: #ffeaa7;
@@ -144,21 +184,14 @@
       font-weight: bold;
     }
 
-    /* ステージ */
-    .stage {
-      min-height: 180px;
-      max-height: 420px;
-      overflow-y: auto;
-      background: #fafafa;
-      border-radius: 20px;
-      padding: 15px;
-      border: 2px dashed #ffb6c1;
+    /* 3. グループ分けエリア */
+    .grouped-area {
+      min-height: 120px;
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
       justify-content: center;
       align-items: center;
-      margin-bottom: 15px;
     }
 
     /* グループ（おうち） */
@@ -235,12 +268,13 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      margin-top: 10px;
     }
     .message-box.blue { color: #10ac84; }
     .message-box.orange { color: #ee5253; }
     .message-box.warn { color: #d35400; }
 
-    /* 正解の〇アニメーション表示用オーバーレイ */
+    /* 正解の〇アニメーション表示用 */
     .correct-overlay {
       position: absolute;
       top: 50%;
@@ -254,30 +288,16 @@
       z-index: 100;
       text-shadow: 0 0 20px rgba(255, 105, 180, 0.6);
     }
-
     .correct-overlay.play-anim {
       animation: maruPopFade 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
     }
 
     @keyframes maruPopFade {
-      0% {
-        opacity: 0;
-        transform: translate(-50%, -50%) scale(0.3);
-      }
-      30% {
-        opacity: 0.9;
-        transform: translate(-50%, -50%) scale(1.1);
-      }
-      50% {
-        opacity: 1;
-        transform: translate(-50%, -50%) scale(1.0);
-      }
-      100% {
-        opacity: 0;
-        transform: translate(-50%, -50%) scale(1.2);
-      }
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(0.3); }
+      30% { opacity: 0.9; transform: translate(-50%, -50%) scale(1.1); }
+      50% { opacity: 1; transform: translate(-50%, -50%) scale(1.0); }
+      100% { opacity: 0; transform: translate(-50%, -50%) scale(1.2); }
     }
-
     @keyframes popIn {
       0% { transform: scale(0.8); opacity: 0; }
       100% { transform: scale(1); opacity: 1; }
@@ -301,7 +321,6 @@
 <body>
 
 <div class="card">
-  <!-- 正解時の〇表示要素 -->
   <div id="correctOverlay" class="correct-overlay">◯</div>
 
   <h1>💖 ハートをみんなで わけっこ！ 💖</h1>
@@ -321,9 +340,31 @@
     <button class="btn-reset btn-all-reset" onclick="resetAll()">💥 ぜんぶけす</button>
   </div>
 
-  <div class="kids-area" id="kidsArea"></div>
+  <!-- 1. グレーのハート（割られる数を入力で出現） -->
+  <div class="display-section">
+    <div class="all-hearts-area" id="allHeartsArea"></div>
+  </div>
 
-  <div class="stage" id="stage"></div>
+  <!-- 区切り：÷ -->
+  <div class="op-divider">÷</div>
+
+  <!-- 2. わける人数（割る数を入力で出現） -->
+  <div class="display-section">
+    <div class="kids-area" id="kidsArea"></div>
+  </div>
+
+  <!-- 区切り：縦向きの＝（縦線2本） -->
+  <div class="op-divider">
+    <div class="equal-vertical" title="＝">
+      <span></span>
+      <span></span>
+    </div>
+  </div>
+
+  <!-- 3. グループ分け（商を入力で出現） -->
+  <div class="display-section" id="groupedSection">
+    <div class="grouped-area" id="groupedArea"></div>
+  </div>
 
   <div class="message-box" id="message"></div>
 </div>
@@ -333,41 +374,31 @@
   const divisorSelect = document.getElementById('divisor');
   const quotientSelect = document.getElementById('quotient');
   const remainderBox = document.getElementById('remainder');
+  
+  const allHeartsArea = document.getElementById('allHeartsArea');
   const kidsArea = document.getElementById('kidsArea');
-  const stage = document.getElementById('stage');
+  const groupedArea = document.getElementById('groupedArea');
   const message = document.getElementById('message');
   const correctOverlay = document.getElementById('correctOverlay');
 
   const KID_EMOJIS = ['👦', '👧', '🧒', '👶', '🧑', '🐱', '🐰', '🐻', '🐶', '🦊'];
 
-  // ドロップダウンの選択肢を初期化
   function initSelects() {
-    // 割られる数 (未選択 + 1〜99)
     totalSelect.innerHTML = '<option value="">？</option>';
-    for (let i = 1; i <= 99; i++) {
-      totalSelect.add(new Option(i, i));
-    }
+    for (let i = 1; i <= 99; i++) totalSelect.add(new Option(i, i));
 
-    // 割る数 (未選択 + 1〜10)
     divisorSelect.innerHTML = '<option value="">？</option>';
-    for (let i = 1; i <= 10; i++) {
-      divisorSelect.add(new Option(i, i));
-    }
+    for (let i = 1; i <= 10; i++) divisorSelect.add(new Option(i, i));
 
-    // 商 (?) (未選択 + 0〜99)
     quotientSelect.innerHTML = '<option value="">？</option>';
-    for (let i = 0; i <= 99; i++) {
-      quotientSelect.add(new Option(i, i));
-    }
+    for (let i = 0; i <= 99; i++) quotientSelect.add(new Option(i, i));
   }
 
-  // 答え（商）だけクリア
   function resetAnswerOnly() {
     quotientSelect.value = '';
     render();
   }
 
-  // 完全リセット（問題もすべて初期化）
   function resetAll() {
     totalSelect.value = '';
     divisorSelect.value = '';
@@ -375,10 +406,9 @@
     render();
   }
 
-  // 〇のアニメーション再生
   function showMaruAnimation() {
     correctOverlay.classList.remove('play-anim');
-    void correctOverlay.offsetWidth; // リフロー発生
+    void correctOverlay.offsetWidth;
     correctOverlay.classList.add('play-anim');
   }
 
@@ -391,20 +421,25 @@
     const divisor = parseInt(divisorVal);
     const q = parseInt(qVal);
 
-    stage.innerHTML = '';
+    allHeartsArea.innerHTML = '';
     kidsArea.innerHTML = '';
+    groupedArea.innerHTML = '';
     message.innerText = '';
     message.className = 'message-box';
 
-    // 割られる数が未選択の場合
-    if (totalVal === '' || isNaN(total) || total <= 0) {
-      remainderBox.innerText = '？';
-      stage.innerHTML = '<span style="color:#aaa;">かずを えらんでね！</span>';
-      kidsArea.innerHTML = '<span style="color:#aaa;">まずは「ぜんぶの かず」を えらぼう！</span>';
-      return;
+    // 1. グレーのハートの表示（割られる数を入力で出現）
+    if (!isNaN(total) && total > 0) {
+      for (let i = 0; i < total; i++) {
+        const heart = document.createElement('span');
+        heart.className = 'heart white';
+        heart.innerText = '♥';
+        allHeartsArea.appendChild(heart);
+      }
+    } else {
+      allHeartsArea.innerHTML = '<span style="color:#aaa;">「ぜんぶの かず（÷のひだり）」を えらぼう！</span>';
     }
 
-    // 1. 子どもたちの表示
+    // 2. わける人数の表示（割る数を入力で出現）
     if (!isNaN(divisor) && divisor > 0) {
       let kidsHtml = '<span class="kid-tag">分けるにんずう:</span> ';
       for (let i = 0; i < divisor; i++) {
@@ -412,35 +447,27 @@
       }
       kidsArea.innerHTML = kidsHtml;
     } else {
-      kidsArea.innerHTML = '<span style="color:#aaa;">なんにんで 分ける？（割る数をえらんでね）</span>';
+      kidsArea.innerHTML = '<span style="color:#aaa;">「分ける にんずう（÷の みぎ）」を えらぼう！</span>';
     }
 
-    // 2. 商（？）が未選択、または割る数が未選択の場合：白いハートを並べるだけ
-    if (isNaN(divisor) || divisor <= 0 || qVal === '' || isNaN(q)) {
+    // 商が未選択の場合はグループ分けを表示しない
+    if (isNaN(total) || isNaN(divisor) || qVal === '' || isNaN(q)) {
       remainderBox.innerText = '？';
-      for (let i = 0; i < total; i++) {
-        const heart = document.createElement('span');
-        heart.className = 'heart white';
-        heart.innerText = '♥';
-        stage.appendChild(heart);
-      }
-      if (isNaN(divisor) || divisor <= 0) {
-        message.innerText = `ぜんぶで ${total}こ あるよ！なんにんで 分ける？`;
-      } else {
-        message.innerText = `ぜんぶで ${total}こ あるよ！1人「なんこずつ」に 分ける？`;
+      groupedArea.innerHTML = '<span style="color:#aaa;">「1人に くばる かず（＝の みぎ）」を えらぶと グループ分けするよ！</span>';
+      
+      if (!isNaN(total) && !isNaN(divisor)) {
+        message.innerText = `ぜんぶで ${total}こ あるよ！1人に「なんこずつ」分ける？`;
       }
       return;
     }
 
-    // 3. 商が入力された後の計算＆視覚化
+    // 3. グループ分けの表示（商を入力で出現）
     const coloredCount = divisor * q;
     const rem = total - coloredCount;
 
-    // A. ぴったり、またはあまりが出るとき
     if (coloredCount <= total) {
       remainderBox.innerText = rem;
 
-      // 商の数だけセットを作る
       for (let g = 0; g < q; g++) {
         const group = createGroupContainer(`セット ${g + 1}`);
         for (let h = 0; h < divisor; h++) {
@@ -449,15 +476,13 @@
           heart.innerText = '♥';
           group.appendChild(heart);
         }
-        stage.appendChild(group);
+        groupedArea.appendChild(group);
       }
 
-      // あまった分（あまり）のハート
       if (rem > 0) {
         const canMakeMoreSets = Math.floor(rem / divisor);
 
         if (canMakeMoreSets > 0) {
-          // 不正解：まだセットが作れる（あまりが大きすぎる）
           const remGroup = createGroupContainer('あまりが おおきいよ！', 'remainder-too-much');
           for (let r = 0; r < rem; r++) {
             const heart = document.createElement('span');
@@ -465,12 +490,11 @@
             heart.innerText = '♥';
             remGroup.appendChild(heart);
           }
-          stage.appendChild(remGroup);
+          groupedArea.appendChild(remGroup);
 
           message.innerText = `💡 まだ あと ${canMakeMoreSets}セット つくれるよ！商を ふやしてみよう！`;
           message.classList.add('warn');
         } else {
-          // 🎉 正解：正しくあまりが求まった！
           showMaruAnimation();
 
           const remGroup = createGroupContainer('あまり', 'remainder-group');
@@ -480,27 +504,23 @@
             heart.innerText = '♥';
             remGroup.appendChild(heart);
           }
-          stage.appendChild(remGroup);
+          groupedArea.appendChild(remGroup);
 
           message.innerText = `✨ 1人に ${q}こずつ 分けると、${rem}こ あまるね！`;
           message.classList.add('blue');
         }
       } else {
-        // 🎉 正解：ぴったり割り切れた！
         showMaruAnimation();
-
         message.innerText = '🎉 ぴったり！あまりなし（あまり 0）だね！';
         message.classList.add('blue');
       }
 
     } else {
-      // B. 不正解：ハートが足りないとき (商が大きすぎる場合)
       remainderBox.innerText = '0';
       const missingCount = coloredCount - total;
       const fullGroups = Math.floor(total / divisor);
       let drawnHearts = 0;
 
-      // 完全につくれるグループ
       for (let g = 0; g < fullGroups; g++) {
         const group = createGroupContainer(`セット ${g + 1}`);
         for (let h = 0; h < divisor; h++) {
@@ -510,10 +530,9 @@
           group.appendChild(heart);
           drawnHearts++;
         }
-        stage.appendChild(group);
+        groupedArea.appendChild(group);
       }
 
-      // 不足している最後のグループ（実物ピンク + 不足破線♡）
       const incompleteGroup = createGroupContainer('たりないよ！', 'incomplete');
       const realLeft = total - drawnHearts;
 
@@ -529,7 +548,7 @@
         heart.innerText = '♡';
         incompleteGroup.appendChild(heart);
       }
-      stage.appendChild(incompleteGroup);
+      groupedArea.appendChild(incompleteGroup);
 
       message.innerText = `💧 ${missingCount}こ たらないよ！ (${q}こずつは 多すぎるね)`;
       message.classList.add('orange');
@@ -548,12 +567,10 @@
     return div;
   }
 
-  // イベント登録
   totalSelect.addEventListener('change', render);
   divisorSelect.addEventListener('change', render);
   quotientSelect.addEventListener('change', render);
 
-  // 初期化実行
   initSelects();
   render();
 </script>
