@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>マリオと わけっこ！ コインチャレンジ 🍄✨</title>
 
-  <!-- ホーム画面追加用アイコン設定 -->
   <link rel="apple-touch-icon" href="peach-icon.png">
   <link rel="icon" type="image/png" href="peach-icon.png">
   <link rel="manifest" href="manifest.json">
@@ -32,7 +31,7 @@
       overflow-x: hidden;
     }
 
-    /* 最上部：コレクション・カウント表示バー */
+    /* コレクション・カウント表示バー */
     .collection-bar {
       width: 100%;
       max-width: 500px;
@@ -98,7 +97,6 @@
       position: relative;
     }
 
-    /* 正解時の背景演出 */
     .correct-circle-bg {
       position: fixed;
       top: 50%;
@@ -151,13 +149,6 @@
       vertical-align: -2px;
       margin: 0 2px;
       object-fit: contain;
-    }
-
-    .coin-cell-img {
-      width: 80%;
-      height: 80%;
-      object-fit: contain;
-      pointer-events: none;
     }
 
     .formula-box {
@@ -299,22 +290,7 @@
       z-index: 20;
     }
 
-    .equal-vertical {
-      display: inline-flex;
-      flex-direction: row;
-      gap: 6px;
-      align-items: center;
-      justify-content: center;
-    }
-    .equal-vertical span {
-      display: block;
-      width: 5px;
-      height: 20px;
-      background-color: #e71d36;
-      border: 2px solid #000;
-      border-radius: 3px;
-    }
-
+    /* 元のコイングリッド構造 */
     .coins-grid-strict {
       display: flex;
       flex-direction: column;
@@ -349,51 +325,24 @@
       justify-content: center;
       user-select: none;
       transition: all 0.3s ease;
-      border: 2px solid transparent;
       position: relative;
       box-sizing: border-box;
     }
 
-    /* 配り終えた（使用済み）コインのグレーアウトスタイル */
+    .coin-cell-img {
+      width: 80%;
+      height: 80%;
+      object-fit: contain;
+      pointer-events: none;
+    }
+
+    /* 配り終えた（使用済み）コインのシンプルなグレーアウト */
     .coin-cell.is-used {
       filter: grayscale(100%);
-      opacity: 0.35;
-      background: #e0e0e0 !important;
-      border-color: #aaa !important;
+      opacity: 0.3;
     }
 
-    .coin-cell.set-color-0 { background: #ffe3e3; border-color: #ff8787; }
-    .coin-cell.set-color-1 { background: #d0ebff; border-color: #74c0fc; }
-    .coin-cell.set-color-2 { background: #e6fcf5; border-color: #63e6be; }
-    .coin-cell.set-color-3 { background: #fff9db; border-color: #ffd43b; }
-    .coin-cell.set-color-4 { background: #f3d9fa; border-color: #da77f2; }
-    .coin-cell.set-color-5 { background: #ffe8cc; border-color: #ffa8a8; }
-
-    .coin-cell.is-remainder {
-      background: #e0fbf6;
-      border-color: #2ec4b6;
-      filter: hue-rotate(180deg) saturate(1.5);
-      animation: bounce 0.6s infinite alternate;
-    }
-
-    .coin-cell .set-badge {
-      position: absolute;
-      top: -7px;
-      left: -3px;
-      background: #e71d36;
-      color: #fff;
-      font-size: clamp(7px, 2vw, 9px);
-      font-weight: 900;
-      padding: 0px 3px;
-      border-radius: 4px;
-      border: 1px solid #000;
-      white-space: nowrap;
-      z-index: 10;
-      pointer-events: none;
-      line-height: 1.1;
-    }
-
-    .all-hearts-area, .grouped-area {
+    .all-hearts-area {
       min-height: 38px;
       width: 100%;
       display: flex;
@@ -401,9 +350,10 @@
       align-items: center;
     }
 
+    /* キャラクター表示エリア */
     .kids-area {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: flex-start;
       min-height: 48px;
       width: 100%;
@@ -413,6 +363,14 @@
       display: grid;
       grid-template-columns: repeat(5, 1fr);
       gap: 8px;
+    }
+
+    .char-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      width: 100%;
     }
 
     .char-card {
@@ -435,6 +393,34 @@
       width: 100%;
       height: 100%;
       object-fit: contain;
+    }
+
+    /* キャラクター下のコイン表示スペース */
+    .char-coins-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 2px;
+      width: 100%;
+      min-height: 20px;
+    }
+
+    .mini-coin {
+      width: 16px;
+      height: 16px;
+      object-fit: contain;
+      animation: coinPopIn 0.2s ease-out;
+    }
+
+    /* 赤色コイン（不足分） */
+    .mini-coin.red-coin {
+      filter: hue-rotate(140deg) saturate(3) brightness(0.9);
+    }
+
+    @keyframes coinPopIn {
+      0% { transform: scale(0); }
+      80% { transform: scale(1.2); }
+      100% { transform: scale(1); }
     }
 
     .message-box {
@@ -555,15 +541,18 @@
       animation: itemPopUpLarge 1.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.2s forwards;
     }
 
-    /* コインが飛ぶアニメーション用エレメント */
+    /* 飛ぶコインアニメーション用 */
     .flying-coin {
       position: fixed;
-      width: 28px;
-      height: 28px;
+      width: 24px;
+      height: 24px;
       pointer-events: none;
       z-index: 300;
-      transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+      transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
       filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
+    }
+    .flying-coin.red-coin {
+      filter: hue-rotate(140deg) saturate(3) brightness(0.9) drop-shadow(0 2px 4px rgba(0,0,0,0.4));
     }
 
     @keyframes containerFade {
@@ -590,22 +579,15 @@
       75% { transform: translateY(-115px) scale(1.2) rotate(135deg); opacity: 0.8; }
       100% { transform: translateY(-120px) scale(1.3) rotate(180deg); opacity: 0; }
     }
-
-    @keyframes bounce {
-      0% { transform: translateY(0); }
-      100% { transform: translateY(-4px); }
-    }
   </style>
 </head>
 <body>
 
-<!-- 画面最上部：獲得アイテムのカウント表示エリア -->
 <div id="collectionBar" class="collection-bar"></div>
 
 <div class="card">
   <div id="correctCircleBg" class="correct-circle-bg"></div>
 
-  <!-- 演出アニメーション用領域 -->
   <div id="blockAnimContainer" class="block-anim-container">
     <img id="itemBlockImg" class="item-block-img" src="question-block.png" alt="ハテナブロック">
     <div class="item-pop-wrapper">
@@ -644,7 +626,7 @@
 
   <div class="op-divider">÷</div>
 
-  <!-- 2. キャラクター -->
+  <!-- 2. キャラクター（＋配られたコイン） -->
   <div class="section-wrapper">
     <div id="kidsTitle" class="section-title"></div>
     <div class="display-section">
@@ -652,26 +634,10 @@
     </div>
   </div>
 
-  <div class="op-divider">
-    <div class="equal-vertical" title="＝">
-      <span></span>
-      <span></span>
-    </div>
-  </div>
-
-  <!-- 3. グループ分け -->
-  <div class="section-wrapper">
-    <div id="groupTitle" class="section-title"></div>
-    <div class="display-section" id="groupedSection">
-      <div class="grouped-area" id="groupedArea"></div>
-    </div>
-  </div>
-
   <div class="message-box" id="message"></div>
 </div>
 
 <script>
-  // キャラクター画像リスト
   const CHARACTERS = [
     { name: 'マリオ', img: 'mario.png' },
     { name: 'ピーチ姫', img: 'peach-icon.png' },
@@ -684,7 +650,6 @@
     { name: 'フォックス', img: 'fox.png' }
   ];
 
-  // 正解時に飛び出すアイテムのリスト
   const REWARD_ITEMS = [
     { id: 'mushroom', name: '赤キノコ', img: 'mushroom.png', rarity: 1, weight: 5 },
     { id: 'coin', name: 'コイン', img: 'coin.png', rarity: 1, weight: 5 },
@@ -708,11 +673,9 @@
   
   const totalTitle = document.getElementById('totalTitle');
   const kidsTitle = document.getElementById('kidsTitle');
-  const groupTitle = document.getElementById('groupTitle');
 
   const allHeartsArea = document.getElementById('allHeartsArea');
   const kidsArea = document.getElementById('kidsArea');
-  const groupedArea = document.getElementById('groupedArea');
   const message = document.getElementById('message');
   
   const blockAnimContainer = document.getElementById('blockAnimContainer');
@@ -769,77 +732,89 @@
     const divisor = parseInt(divisorSelect.value);
     const q = parseInt(quotientSelect.value);
 
-    // アニメーション条件（全体の数が揃っている場合）
     if (!isNaN(total) && !isNaN(divisor) && !isNaN(q) && q > 0) {
-      render(true); // まずアニメーション準備描画
+      render(true); // アニメーション用レイアウト構築
       flyCoinsToCharacters(total, divisor, q, () => {
-        render(false); // アニメーション完了後に最終確定描画
+        render(false); // 完了後に確定描画・判定
       });
     } else {
       render();
     }
   }
 
-  // スーッと飛んで配られるコインアニメーション処理
+  // コインが各キャラクターのもとへ飛ばされるアニメーション
   function flyCoinsToCharacters(total, divisor, q, onComplete) {
     if (isAnimating) return;
     isAnimating = true;
 
-    // コインセルの取得
     const coinCells = allHeartsArea.querySelectorAll('.coin-cell');
-    const charCards = kidsArea.querySelectorAll('.char-card');
+    const charBlocks = kidsArea.querySelectorAll('.char-block');
 
-    if (coinCells.length === 0 || charCards.length === 0) {
+    if (coinCells.length === 0 || charBlocks.length === 0) {
       isAnimating = false;
       onComplete();
       return;
     }
 
-    const totalToFly = Math.min(total, divisor * q);
+    const totalToFly = divisor * q;
     let completedCount = 0;
 
     for (let i = 0; i < totalToFly; i++) {
-      const sourceCell = coinCells[i];
-      if (!sourceCell) continue;
+      const isRed = i >= total; // 全体コインを超えた分は赤コイン
+      const targetCharIndex = Math.floor(i / q);
+      const targetBlock = charBlocks[targetCharIndex];
 
-      const targetCharIndex = Math.floor(i / q) % divisor;
-      const targetCard = charCards[targetCharIndex];
+      if (!targetBlock) continue;
 
-      const srcRect = sourceCell.getBoundingClientRect();
-      const targetRect = targetCard ? targetCard.getBoundingClientRect() : srcRect;
+      const targetCoinsContainer = targetBlock.querySelector('.char-coins-container');
+      const targetRect = targetCoinsContainer ? targetCoinsContainer.getBoundingClientRect() : targetBlock.getBoundingClientRect();
+
+      let srcRect;
+      if (!isRed && coinCells[i]) {
+        srcRect = coinCells[i].getBoundingClientRect();
+      } else {
+        // 赤コインは画面中央（または末尾のコイン）から飛び出す
+        const lastCoin = coinCells[Math.min(i, total - 1)];
+        srcRect = lastCoin ? lastCoin.getBoundingClientRect() : { left: window.innerWidth / 2, top: 200, width: 24, height: 24 };
+      }
 
       // 飛ぶコインエレメント生成
       const flyingCoin = document.createElement('img');
       flyingCoin.src = 'coin.png';
-      flyingCoin.className = 'flying-coin';
+      flyingCoin.className = `flying-coin ${isRed ? 'red-coin' : ''}`;
       flyingCoin.style.left = `${srcRect.left}px`;
       flyingCoin.style.top = `${srcRect.top}px`;
-      flyingCoin.style.width = `${srcRect.width}px`;
-      flyingCoin.style.height = `${srcRect.height}px`;
 
       document.body.appendChild(flyingCoin);
 
-      // コイン発射タイミングを少しずつずらす
       setTimeout(() => {
-        // 元のコインセルをグレーアウト
-        sourceCell.classList.add('is-used');
+        // 全体コインのグレー化（持ちコインの範囲内）
+        if (!isRed && coinCells[i]) {
+          coinCells[i].classList.add('is-used');
+        }
 
-        // アニメーション移動
-        flyingCoin.style.left = `${targetRect.left + targetRect.width / 2 - 12}px`;
-        flyingCoin.style.top = `${targetRect.top + targetRect.height / 2 - 12}px`;
-        flyingCoin.style.transform = 'scale(0.5)';
-        flyingCoin.style.opacity = '0.5';
+        // 移動アニメーション
+        flyingCoin.style.left = `${targetRect.left + (targetRect.width / 2) - 8}px`;
+        flyingCoin.style.top = `${targetRect.top + 4}px`;
+        flyingCoin.style.transform = 'scale(0.7)';
 
         setTimeout(() => {
           flyingCoin.remove();
+
+          // キャラクター下に小さなコインを追加表示
+          const miniCoin = document.createElement('img');
+          miniCoin.src = 'coin.png';
+          miniCoin.className = `mini-coin ${isRed ? 'red-coin' : ''}`;
+          if (targetCoinsContainer) targetCoinsContainer.appendChild(miniCoin);
+
           completedCount++;
 
           if (completedCount >= totalToFly) {
             isAnimating = false;
             onComplete();
           }
-        }, 500);
-      }, i * 40); // 40msずつ順次発射
+        }, 400);
+      }, i * 35);
     }
 
     if (totalToFly === 0) {
@@ -908,14 +883,13 @@
     playSound(wrongAudio);
   }
 
-  function createStrictCoinGrid(total, groupSize = null, maxGroups = null, isPreAnimation = false) {
+  // シンプルな全体のコイン表示作成
+  function createStrictCoinGrid(total, usedCount = 0) {
     const grid = document.createElement('div');
     grid.className = 'coins-grid-strict';
 
     let currentRow = null;
     let currentGroup5 = null;
-
-    const maxAllocatedCoins = (groupSize && maxGroups) ? groupSize * maxGroups : 0;
 
     for (let i = 0; i < total; i++) {
       if (i % 10 === 0) {
@@ -932,46 +906,18 @@
 
       const cell = document.createElement('div');
       cell.className = 'coin-cell';
-      
+
+      // 配り終えた分だけグレーアウト
+      if (i < usedCount) {
+        cell.classList.add('is-used');
+      }
+
       const coinImg = document.createElement('img');
       coinImg.src = 'coin.png';
       coinImg.alt = 'コイン';
       coinImg.className = 'coin-cell-img';
+
       cell.appendChild(coinImg);
-
-      // アニメーション完了後、配られた部分のセルをグレーアウト
-      if (!isPreAnimation && groupSize && groupSize > 0) {
-        if (i < maxAllocatedCoins) {
-          cell.classList.add('is-used');
-        }
-      }
-
-      if (groupSize && groupSize > 0) {
-        const setIndex = Math.floor(i / groupSize);
-
-        if (i < maxAllocatedCoins && setIndex < maxGroups) {
-          if (!cell.classList.contains('is-used')) {
-            cell.classList.add(`set-color-${setIndex % 6}`);
-          }
-
-          if (i % groupSize === 0) {
-            const badge = document.createElement('span');
-            badge.className = 'set-badge';
-            badge.innerText = `セット${setIndex + 1}`;
-            cell.appendChild(badge);
-          }
-        } else {
-          cell.classList.add('is-remainder');
-          if (i === maxAllocatedCoins) {
-            const badge = document.createElement('span');
-            badge.className = 'set-badge';
-            badge.style.background = '#2ec4b6';
-            badge.innerText = 'あまり';
-            cell.appendChild(badge);
-          }
-        }
-      }
-
       currentGroup5.appendChild(cell);
     }
 
@@ -989,27 +935,38 @@
 
     allHeartsArea.innerHTML = '';
     kidsArea.innerHTML = '';
-    groupedArea.innerHTML = '';
     message.innerText = '';
     message.className = 'message-box';
 
+    const hasValidQ = !isNaN(q) && q > 0;
+    const totalDistributed = hasValidQ ? divisor * q : 0;
+    const usedCoinsInTotal = Math.min(total || 0, totalDistributed);
+
+    // 1. 全体コイン描画
     if (!isNaN(total) && total > 0) {
       totalTitle.innerHTML = `${total}枚のコイン<img src="coin.png" class="inline-coin-img" alt="コイン">を`;
       totalTitle.style.display = 'block';
-      allHeartsArea.appendChild(createStrictCoinGrid(total, qVal !== '' ? q : null, divisor, isPreAnimation));
+      allHeartsArea.appendChild(createStrictCoinGrid(total, isPreAnimation ? 0 : usedCoinsInTotal));
     } else {
       totalTitle.style.display = 'none';
       allHeartsArea.innerHTML = '<span style="color:#888; font-size:13px;">「ぜんぶの コイン（÷のひだり）」を えらぼう！</span>';
     }
 
+    // 2. キャラクター＆下部のコイン描画
     if (!isNaN(divisor) && divisor > 0) {
       kidsTitle.innerText = `${divisor}人で分けると`;
       kidsTitle.style.display = 'block';
 
       kidsArea.classList.add('is-grid');
 
+      let currentDistributedCoin = 0;
+
       for (let i = 0; i < divisor; i++) {
         const charInfo = CHARACTERS[i % CHARACTERS.length];
+
+        const block = document.createElement('div');
+        block.className = 'char-block';
+
         const card = document.createElement('div');
         card.className = 'char-card';
         card.title = `${i + 1}人目: ${charInfo.name}`;
@@ -1019,7 +976,25 @@
         img.alt = charInfo.name;
 
         card.appendChild(img);
-        kidsArea.appendChild(card);
+
+        const coinsContainer = document.createElement('div');
+        coinsContainer.className = 'char-coins-container';
+
+        // 商が入力されており、アニメーション中ではない場合に配られたコインを表示
+        if (hasValidQ && !isPreAnimation) {
+          for (let c = 0; c < q; c++) {
+            const isRed = currentDistributedCoin >= total;
+            const miniCoin = document.createElement('img');
+            miniCoin.src = 'coin.png';
+            miniCoin.className = `mini-coin ${isRed ? 'red-coin' : ''}`;
+            coinsContainer.appendChild(miniCoin);
+            currentDistributedCoin++;
+          }
+        }
+
+        block.appendChild(card);
+        block.appendChild(coinsContainer);
+        kidsArea.appendChild(block);
       }
     } else {
       kidsTitle.style.display = 'none';
@@ -1029,27 +1004,19 @@
 
     if (isNaN(total) || isNaN(divisor) || qVal === '' || isNaN(q)) {
       remainderBox.innerText = '？';
-      groupTitle.style.display = 'none';
-      groupedArea.innerHTML = '<span style="color:#888; font-size:13px;">「1人に くばる かず（＝の みぎ）」を えらぶと グループ分けするよ！</span>';
-      
       if (!isNaN(total) && !isNaN(divisor)) {
         message.innerText = `ぜんぶで ${total}枚のコイン！1人に「なん枚ずつ」配る？`;
       }
       return;
     }
 
-    // アニメーション移動中の事前レンダリング時はグループ判定を保留
     if (isPreAnimation) return;
 
-    const coloredCount = divisor * q;
-    const rem = total - coloredCount;
+    // 判定ロジック
+    const rem = total - totalDistributed;
 
-    if (coloredCount <= total) {
+    if (totalDistributed <= total) {
       remainderBox.innerText = rem;
-      groupTitle.innerText = `${q}枚ずつ配ってあまり${rem}`;
-      groupTitle.style.display = 'block';
-
-      groupedArea.appendChild(createStrictCoinGrid(total, q, divisor));
 
       if (rem > 0) {
         const canMakeMoreSets = Math.floor(rem / divisor);
@@ -1072,13 +1039,8 @@
     } else {
       triggerWrongAnimation();
       remainderBox.innerText = '0';
-      groupTitle.innerText = `${q}枚ずつ配るとコインがたりない！`;
-      groupTitle.style.display = 'block';
-
-      groupedArea.appendChild(createStrictCoinGrid(total, q, divisor));
-
-      const missingCount = coloredCount - total;
-      message.innerText = `💦 あと ${missingCount}枚 コインが 足りないよ！`;
+      const missingCount = totalDistributed - total;
+      message.innerText = `💦 あと ${missingCount}枚 コインが 足りないよ！（赤コイン）`;
     }
   }
 
