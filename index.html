@@ -3,1039 +3,194 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>マリオと わけっこ！ コインチャレンジ 🍄✨</title>
-
-  <link rel="apple-touch-icon" href="peach-icon.png">
-  <link rel="icon" type="image/png" href="peach-icon.png">
-  <link rel="manifest" href="manifest.json">
-
+  <title>マリオと わけっこ！ くもんこたえあわせ 🍄✨</title>
   <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@800;900&display=swap" rel="stylesheet">
   <style>
-    * {
-      box-sizing: border-box;
-      font-family: 'M PLUS Rounded 1c', sans-serif;
-    }
+    * { box-sizing: border-box; font-family: 'M PLUS Rounded 1c', sans-serif; }
     body {
       background-color: #5c94fc;
-      background-image: 
-        radial-gradient(circle at 10% 20%, #ffffff 0%, #ffffff 8%, transparent 9%),
-        radial-gradient(circle at 15% 18%, #ffffff 0%, #ffffff 6%, transparent 7%),
-        radial-gradient(circle at 85% 15%, #ffffff 0%, #ffffff 10%, transparent 11%);
-      margin: 0;
-      padding: 10px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      color: #333;
-      position: relative;
-      overflow-x: hidden;
-    }
-
-    /* コレクション・カウント表示バー */
-    .collection-bar {
-      width: 100%;
-      max-width: 500px;
-      background: rgba(0, 0, 0, 0.4);
-      border: 3px solid #000;
-      border-radius: 16px;
-      padding: 6px 10px;
-      margin-bottom: 10px;
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 6px;
-      backdrop-filter: blur(4px);
-      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-    }
-
-    .item-count-badge {
-      display: flex;
-      align-items: center;
-      gap: 3px;
-      background: rgba(255, 255, 255, 0.9);
-      padding: 3px 6px;
-      border-radius: 10px;
-      border: 2px solid #000;
-      font-size: 13px;
-      font-weight: 900;
-      color: #000;
-      opacity: 0.4;
-      transition: all 0.3s ease;
-    }
-
-    .item-count-badge.has-count {
-      opacity: 1;
-      background: #fff;
-    }
-
-    .item-count-badge.pop-anim {
-      animation: badgePop 0.3s ease-out;
-    }
-
-    .item-count-badge img {
-      width: 20px;
-      height: 20px;
-      object-fit: contain;
-    }
-
-    @keyframes badgePop {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.3); }
-      100% { transform: scale(1); }
+      margin: 0; padding: 15px;
+      display: flex; flex-direction: column; align-items: center;
+      color: #333; position: relative; overflow-x: hidden;
     }
 
     .card {
-      background: #f8f9fa;
-      border-radius: 20px;
-      padding: 15px 10px;
+      background: #f8f9fa; border-radius: 20px; padding: 15px 12px;
       box-shadow: 0 8px 0 #1b4332, 0 12px 20px rgba(0,0,0,0.3);
-      border: 5px solid #e71d36;
-      max-width: 500px;
-      width: 100%;
-      text-align: center;
+      border: 5px solid #e71d36; max-width: 480px; width: 100%; text-align: center;
       position: relative;
-    }
-
-    .correct-circle-bg {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%) scale(0.2);
-      width: 320px;
-      height: 320px;
-      border: 28px solid rgba(231, 29, 54, 0.35);
-      border-radius: 50%;
-      pointer-events: none;
-      z-index: 100;
-      opacity: 0;
-    }
-    .correct-circle-bg.play-anim {
-      animation: circlePopFade 1.6s ease-out forwards;
-    }
-
-    @keyframes circlePopFade {
-      0% { opacity: 0; transform: translate(-50%, -50%) scale(0.3); }
-      30% { opacity: 1; transform: translate(-50%, -50%) scale(1.05); }
-      70% { opacity: 0.8; transform: translate(-50%, -50%) scale(1); }
-      100% { opacity: 0; transform: translate(-50%, -50%) scale(1.2); }
     }
 
     h1 {
-      color: #ff9f1c;
-      font-size: 20px;
-      line-height: 1.3;
-      margin-top: 0;
-      margin-bottom: 12px;
-      text-shadow: 2px 2px 0 #e71d36, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000;
-      letter-spacing: 1px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-      flex-wrap: wrap;
+      color: #ff9f1c; font-size: 18px; margin: 0 0 10px 0;
+      text-shadow: 2px 2px 0 #e71d36, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000;
     }
 
-    .title-mushroom-img, .title-coin-img {
-      height: 24px;
-      width: auto;
-      vertical-align: middle;
-      object-fit: contain;
+    /* 1. プリントのしき入力 */
+    .section-box {
+      background: #fff; border: 3px solid #000; border-radius: 14px;
+      padding: 10px; margin-bottom: 12px; box-shadow: 0 3px 0 #ccc;
+    }
+    .box-title {
+      font-size: 13px; font-weight: 900; color: #e71d36; margin-bottom: 6px;
     }
 
-    .inline-coin-img {
-      height: 16px;
-      width: auto;
-      vertical-align: -2px;
-      margin: 0 2px;
-      object-fit: contain;
+    .formula-row {
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      font-size: 22px; font-weight: 900;
     }
 
-    .formula-box {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 6px;
-      font-size: 20px;
-      font-weight: 900;
-      color: #ffffff;
-      background: #ff9f1c;
-      padding: 10px;
-      border-radius: 16px;
-      border: 3px solid #000;
-      box-shadow: inset 0 -4px 0 #c77700, 0 4px 0 #000;
-      margin-bottom: 18px;
-      text-shadow: 2px 2px 0 #000;
-      position: relative;
-      z-index: 20;
+    input[type="number"] {
+      font-size: 20px; font-weight: 900; text-align: center;
+      border: 3px solid #000; border-radius: 10px; width: 55px; height: 42px;
+      outline: none; background: #fff;
     }
+    input[type="number"]:focus { border-color: #2ec4b6; background: #e0fbf6; }
+    .ans-input { background: #fff3bf !important; }
 
-    select {
-      font-family: inherit;
-      font-size: 18px;
-      font-weight: 900;
-      text-align: center;
-      border: 3px solid #000;
-      border-radius: 10px;
-      outline: none;
-      color: #000;
-      background: #fff;
-      padding: 2px 6px;
-      cursor: pointer;
-      box-shadow: 0 3px 0 #888;
-      appearance: none;
-      -webkit-appearance: none;
-    }
-    select:focus {
-      border-color: #2ec4b6;
-      background: #e0fbf6;
-    }
-    .ans-select { background-color: #fff3bf; }
-
-    .rem-box {
-      width: 45px;
-      height: 38px;
-      line-height: 32px;
-      background-color: #2ec4b6;
-      border: 3px solid #000;
-      color: #fff;
-      border-radius: 10px;
-      display: inline-block;
-      font-size: 18px;
-      box-shadow: inset 0 -3px 0 #1b9aaa;
-    }
-
-    .btn-area {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-      position: relative;
-      z-index: 20;
-    }
-    .btn-reset {
-      border: 3px solid #000;
-      padding: 6px 14px;
-      font-size: 13px;
-      font-weight: 900;
-      border-radius: 12px;
-      cursor: pointer;
+    /* 2. 判定ボタン */
+    .btn-check {
+      background: #ff9f1c; color: #fff; border: 3px solid #000;
+      border-radius: 14px; padding: 10px 20px; font-size: 18px; font-weight: 900;
+      cursor: pointer; box-shadow: 0 5px 0 #c77700, 0 5px 0 #000;
+      text-shadow: 1px 1px 0 #000; width: 100%; margin-top: 6px;
       transition: all 0.1s;
-      color: white;
-      text-shadow: 1px 1px 0 #000;
     }
-    .btn-answer-reset {
-      background: #e71d36;
-      box-shadow: 0 4px 0 #9b0012, 0 4px 0 #000;
-    }
-    .btn-all-reset {
-      background: #011627;
-      box-shadow: 0 4px 0 #000;
-    }
-    .btn-reset:active {
-      transform: translateY(3px);
-      box-shadow: 0 1px 0 #000;
-    }
+    .btn-check:active { transform: translateY(4px); box-shadow: 0 1px 0 #000; }
 
-    .section-wrapper {
-      position: relative;
-      margin-top: 15px;
-      width: 100%;
-    }
-
-    .section-title {
-      position: absolute;
-      top: -12px;
-      left: 10px;
-      font-size: 12px;
-      font-weight: 900;
-      color: #ffffff;
-      background: #e71d36;
-      padding: 2px 10px;
-      border-radius: 8px;
-      border: 2px solid #000;
-      z-index: 30;
-      box-shadow: 0 2px 0 #000;
-      white-space: nowrap;
-      display: none;
-    }
-
-    .display-section {
-      background: #ffffff;
-      border-radius: 16px;
-      padding: 16px 12px;
-      border: 3px solid #000;
-      box-shadow: 0 4px 0 #ccc;
-      position: relative;
-      z-index: 20;
-      display: flex;
-      justify-content: flex-start;
-      width: 100%;
-      overflow: hidden;
-    }
-
-    .op-divider {
-      font-size: 24px;
-      font-weight: 900;
-      color: #ff9f1c;
-      text-shadow: 2px 2px 0 #000;
-      margin: 4px 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      user-select: none;
-      position: relative;
-      z-index: 20;
-    }
-
-    /* 元のコイングリッド構造 */
-    .coins-grid-strict {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      align-items: flex-start;
-      width: 100%;
-    }
-
-    .coin-row-strict {
-      display: flex;
-      align-items: center;
-      justify-content: flex-start;
-      gap: 0;
-      width: 100%;
-    }
-
-    .coin-group-5 {
-      display: flex;
-      gap: 3px;
-    }
-
-    .coin-group-5 + .coin-group-5 {
-      margin-left: 10px;
-    }
-
-    .coin-cell {
-      width: clamp(24px, 7vw, 32px);
-      height: clamp(24px, 7vw, 32px);
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      user-select: none;
-      transition: all 0.3s ease;
-      position: relative;
-      box-sizing: border-box;
-    }
-
-    .coin-cell-img {
-      width: 80%;
-      height: 80%;
-      object-fit: contain;
-      pointer-events: none;
-    }
-
-    /* 配り終えた（使用済み）コインのシンプルなグレーアウト */
-    .coin-cell.is-used {
-      filter: grayscale(100%);
-      opacity: 0.3;
-    }
-
-    .all-hearts-area {
-      min-height: 38px;
-      width: 100%;
-      display: flex;
-      justify-content: flex-start;
-      align-items: center;
-    }
-
-    /* キャラクター表示エリア */
+    /* 3. キャラクターとコイン表示 */
     .kids-area {
-      display: flex;
-      align-items: flex-start;
-      justify-content: flex-start;
-      min-height: 48px;
-      width: 100%;
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+      gap: 6px; margin-top: 10px; min-height: 80px;
     }
-
-    .kids-area.is-grid {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 8px;
-    }
-
-    .char-block {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
-      width: 100%;
-    }
-
+    .char-block { display: flex; flex-direction: column; align-items: center; gap: 4px; }
     .char-card {
-      width: 100%;
-      aspect-ratio: 1 / 1;
-      max-width: 64px;
-      margin: 0 auto;
-      background: #ffffff;
-      border: 2px solid #000;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 3px 0 #000;
-      padding: 4px;
-      overflow: hidden;
-      position: relative;
+      width: 50px; height: 50px; background: #fff; border: 2px solid #000;
+      border-radius: 10px; display: flex; align-items: center; justify-content: center;
+      font-size: 24px; box-shadow: 0 2px 0 #000;
     }
-    .char-card img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
+    .char-coins { display: flex; flex-wrap: wrap; justify-content: center; gap: 2px; }
+    .coin-dot {
+      width: 14px; height: 14px; background: #ffd700; border: 2px solid #000;
+      border-radius: 50%; display: inline-block; animation: pop 0.2s ease-out;
     }
 
-    /* キャラクター下のコイン表示スペース */
-    .char-coins-container {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 2px;
-      width: 100%;
-      min-height: 20px;
+    /* はなまる演出 */
+    .hanamaru {
+      position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%) scale(0);
+      font-size: 100px; color: #e71d36; pointer-events: none; z-index: 100;
+      text-shadow: 0 0 10px #fff;
     }
+    .hanamaru.show { animation: hanamaruPop 1.2s forwards; }
 
-    .mini-coin {
-      width: 16px;
-      height: 16px;
-      object-fit: contain;
-      animation: coinPopIn 0.2s ease-out;
+    @keyframes hanamaruPop {
+      0% { transform: translate(-50%, -50%) scale(0) rotate(-20deg); opacity: 0; }
+      50% { transform: translate(-50%, -50%) scale(1.2) rotate(0deg); opacity: 1; }
+      80% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
+      100% { transform: translate(-50%, -50%) scale(1.1) rotate(0deg); opacity: 0; }
     }
+    @keyframes pop { 0% { transform: scale(0); } 100% { transform: scale(1); } }
 
-    /* ★修正: 赤色コイン（不足分）を鮮やかな赤色にするフィルター */
-    .mini-coin.red-coin {
-      filter: sepia(100%) hue-rotate(310deg) saturate(8) brightness(0.9);
-    }
-
-    @keyframes coinPopIn {
-      0% { transform: scale(0); }
-      80% { transform: scale(1.2); }
-      100% { transform: scale(1); }
-    }
-
-    .message-box {
-      font-size: 16px;
-      font-weight: 900;
-      min-height: 40px;
-      color: #e71d36;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-top: 10px;
-      text-shadow: 1px 1px 0 #fff;
-      position: relative;
-      z-index: 20;
-    }
-    .message-box.blue { color: #2ec4b6; }
-    .message-box.warn { color: #ff9f1c; }
-
-    /* ハテナブロック演出 */
-    .block-anim-container {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      pointer-events: none;
-      z-index: 200;
-      opacity: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-    .block-anim-container.play-anim {
-      animation: containerFade 1.8s forwards;
-    }
-
-    .item-block-img {
-      width: 70px;
-      height: 70px;
-      object-fit: contain;
-      position: relative;
-      z-index: 2;
-    }
-
-    .block-anim-container.play-anim .item-block-img {
-      animation: blockPunch 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-    }
-
-    .item-pop-wrapper {
-      position: absolute;
-      top: 0;
-      z-index: 3;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 160px;
-      height: 160px;
-    }
-
-    .sparkle-bg {
-      position: absolute;
-      width: 220px;
-      height: 220px;
-      background: conic-gradient(
-        from 0deg,
-        rgba(255, 223, 0, 0.9) 0deg 15deg,
-        transparent 15deg 30deg,
-        rgba(255, 223, 0, 0.9) 30deg 45deg,
-        transparent 45deg 60deg,
-        rgba(255, 223, 0, 0.9) 60deg 75deg,
-        transparent 75deg 90deg,
-        rgba(255, 223, 0, 0.9) 90deg 105deg,
-        transparent 105deg 120deg,
-        rgba(255, 223, 0, 0.9) 120deg 135deg,
-        transparent 135deg 150deg,
-        rgba(255, 223, 0, 0.9) 150deg 165deg,
-        transparent 165deg 180deg,
-        rgba(255, 223, 0, 0.9) 180deg 195deg,
-        transparent 195deg 210deg,
-        rgba(255, 223, 0, 0.9) 210deg 225deg,
-        transparent 225deg 240deg,
-        rgba(255, 223, 0, 0.9) 240deg 255deg,
-        transparent 255deg 270deg,
-        rgba(255, 223, 0, 0.9) 270deg 285deg,
-        transparent 285deg 300deg,
-        rgba(255, 223, 0, 0.9) 300deg 315deg,
-        transparent 315deg 330deg,
-        rgba(255, 223, 0, 0.9) 330deg 345deg,
-        transparent 345deg 360deg
-      );
-      border-radius: 50%;
-      opacity: 0;
-      transform: scale(0);
-      filter: drop-shadow(0 0 10px #fff) drop-shadow(0 0 20px #ffd700);
-      pointer-events: none;
-    }
-
-    .item-pop-img {
-      width: 160px;
-      height: 160px;
-      object-fit: contain;
-      transform: scale(0);
-      position: relative;
-      z-index: 4;
-    }
-
-    .block-anim-container.play-correct .sparkle-bg {
-      animation: sparkleRotatePop 1.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.2s forwards;
-    }
-    .block-anim-container.play-correct .item-pop-img {
-      animation: itemPopUpLarge 1.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.2s forwards;
-    }
-
-    .block-anim-container.play-wrong .sparkle-bg {
-      display: none;
-    }
-    .block-anim-container.play-wrong .item-pop-img {
-      animation: itemPopUpLarge 1.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.2s forwards;
-    }
-
-    /* 飛ぶコインアニメーション用 */
-    .flying-coin {
-      position: fixed;
-      width: 24px;
-      height: 24px;
-      pointer-events: none;
-      z-index: 300;
-      transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
-    }
-    /* ★修正: 飛ぶ赤コインも修正 */
-    .flying-coin.red-coin {
-      filter: sepia(100%) hue-rotate(310deg) saturate(8) brightness(0.9) drop-shadow(0 2px 4px rgba(0,0,0,0.4));
-    }
-
-    @keyframes containerFade {
-      0% { opacity: 1; }
-      85% { opacity: 1; }
-      100% { opacity: 0; }
-    }
-    @keyframes blockPunch {
-      0% { transform: translateY(0); }
-      40% { transform: translateY(-28px); }
-      100% { transform: translateY(0); filter: brightness(0.7); }
-    }
-
-    @keyframes itemPopUpLarge {
-      0% { transform: translateY(0) scale(0.2); opacity: 0; }
-      50% { transform: translateY(-130px) scale(1.2); opacity: 1; filter: drop-shadow(0 0 15px rgba(255, 223, 0, 0.8)); }
-      75% { transform: translateY(-115px) scale(1.0); opacity: 1; }
-      100% { transform: translateY(-120px) scale(1.1); opacity: 0; }
-    }
-
-    @keyframes sparkleRotatePop {
-      0% { transform: translateY(0) scale(0.2) rotate(0deg); opacity: 0; }
-      50% { transform: translateY(-130px) scale(1.4) rotate(90deg); opacity: 0.9; }
-      75% { transform: translateY(-115px) scale(1.2) rotate(135deg); opacity: 0.8; }
-      100% { transform: translateY(-120px) scale(1.3) rotate(180deg); opacity: 0; }
-    }
+    .msg-box { font-size: 16px; font-weight: 900; margin-top: 10px; min-height: 30px; }
+    .msg-box.success { color: #2ec4b6; }
+    .msg-box.wrong { color: #e71d36; }
   </style>
 </head>
 <body>
 
-<div id="collectionBar" class="collection-bar"></div>
-
 <div class="card">
-  <div id="correctCircleBg" class="correct-circle-bg"></div>
+  <div id="hanamaru" class="hanamaru">💮</div>
 
-  <div id="blockAnimContainer" class="block-anim-container">
-    <img id="itemBlockImg" class="item-block-img" src="question-block.png" alt="ハテナブロック">
-    <div class="item-pop-wrapper">
-      <div id="sparkleBg" class="sparkle-bg"></div>
-      <img id="itemPopImg" class="item-pop-img" src="star.png" alt="アイテム">
+  <h1>📝 くもん こたえあわせ アシスタント</h1>
+
+  <!-- ステップ1: プリントの問 -->
+  <div class="section-box">
+    <div class="box-title">① プリントのもんだい を 入力しよう</div>
+    <div class="formula-row">
+      <input type="number" id="pTotal" placeholder="22" value="22">
+      <span>÷</span>
+      <input type="number" id="pDivisor" placeholder="5" value="5">
     </div>
   </div>
 
-  <h1>
-    <span><img src="mushroom.png" class="title-mushroom-img" alt="キノコ"> マリオと わけっこ！</span>
-    <span>コインチャレンジ <img src="coin.png" class="title-coin-img" alt="コイン"></span>
-  </h1>
-  
-  <div class="formula-box">
-    <select id="total" onchange="onNumberChange()"></select>
-    <span>÷</span>
-    <select id="divisor" onchange="onNumberChange()"></select>
-    <span>＝</span>
-    <select id="quotient" class="ans-select" onchange="onQuotientChange()"></select>
-    <span>あまり</span>
-    <div id="remainder" class="rem-box">？</div>
-  </div>
-
-  <div class="btn-area">
-    <button class="btn-reset btn-answer-reset" onclick="resetAnswerOnly()">🔄 こたえをけす</button>
-    <button class="btn-reset btn-all-reset" onclick="resetAll()">💥 ぜんぶけす</button>
-  </div>
-
-  <!-- 1. 全体コイン -->
-  <div class="section-wrapper">
-    <div id="totalTitle" class="section-title"></div>
-    <div class="display-section">
-      <div class="all-hearts-area" id="allHeartsArea"></div>
+  <!-- ステップ2: お子様が書いた答え -->
+  <div class="section-box" style="background: #fff9db;">
+    <div class="box-title">② じぶんで かいた こたえ</div>
+    <div class="formula-row">
+      <span>＝</span>
+      <input type="number" id="pQuotient" class="ans-input" placeholder="4">
+      <span style="font-size:14px;">あまり</span>
+      <input type="number" id="pRemainder" class="ans-input" placeholder="2">
     </div>
+    <button class="btn-check" onclick="checkAnswer()">✨ あってるかな？ チャレンジ！</button>
   </div>
 
-  <div class="op-divider">÷</div>
-
-  <!-- 2. キャラクター（＋配られたコイン） -->
-  <div class="section-wrapper">
-    <div id="kidsTitle" class="section-title"></div>
-    <div class="display-section">
-      <div class="kids-area" id="kidsArea"></div>
-    </div>
-  </div>
-
-  <div class="message-box" id="message"></div>
+  <!-- 結果表示・マリオたち -->
+  <div id="msg" class="msg-box">プリントの答えを入力してボタンを押してね！</div>
+  <div id="kidsArea" class="kids-area"></div>
 </div>
 
 <script>
-  const CHARACTERS = [
-    { name: 'マリオ', img: 'mario.png' },
-    { name: 'ピーチ姫', img: 'peach-icon.png' },
-    { name: 'ルイージ', img: 'luigi.png' },
-    { name: 'ヨッシー', img: 'yoshi.png' },
-    { name: 'ロゼッタ', img: 'rosalina.png' },
-    { name: 'チコ', img: 'luma.png' },
-    { name: 'クッパ', img: 'bowser.png' },
-    { name: 'クッパJr', img: 'bowser-jr.png' },
-    { name: 'フォックス', img: 'fox.png' }
-  ];
+  const CHARS = ['🍄', '👑', '🟢', '🦖', '🌟'];
 
-  const REWARD_ITEMS = [
-    { id: 'mushroom', name: '赤キノコ', img: 'mushroom.png', rarity: 1, weight: 5 },
-    { id: 'coin', name: 'コイン', img: 'coin.png', rarity: 1, weight: 5 },
-    { id: 'flower', name: 'ファイアーフラワー', img: 'flower.png', rarity: 1, weight: 5 },
-    { id: 'green-mushroom', name: '緑キノコ', img: 'green-mushroom.png', rarity: 2, weight: 4 },
-    { id: 'yoshi-egg', name: 'ヨッシーのタマゴ', img: 'yoshi-egg.png', rarity: 3, weight: 3 },
-    { id: 'star-coin', name: 'スターコイン', img: 'star-coin.png', rarity: 4, weight: 2 },
-    { id: 'red-star', name: '赤スター', img: 'red-star.png', rarity: 5, weight: 1 }
-  ];
+  function checkAnswer() {
+    const total = parseInt(document.getElementById('pTotal').value);
+    const divisor = parseInt(document.getElementById('pDivisor').value);
+    const userQ = parseInt(document.getElementById('pQuotient').value);
+    const userR = parseInt(document.getElementById('pRemainder').value);
 
-  const rewardCounts = {};
-  REWARD_ITEMS.forEach(item => rewardCounts[item.id] = 0);
+    const msg = document.getElementById('msg');
+    const hanamaru = document.getElementById('hanamaru');
+    const kidsArea = document.getElementById('kidsArea');
 
-  const correctAudio = new Audio('correct.mp3');
-  const wrongAudio = new Audio('wrong.mp3');
-
-  const totalSelect = document.getElementById('total');
-  const divisorSelect = document.getElementById('divisor');
-  const quotientSelect = document.getElementById('quotient');
-  const remainderBox = document.getElementById('remainder');
-  
-  const totalTitle = document.getElementById('totalTitle');
-  const kidsTitle = document.getElementById('kidsTitle');
-
-  const allHeartsArea = document.getElementById('allHeartsArea');
-  const kidsArea = document.getElementById('kidsArea');
-  const message = document.getElementById('message');
-  
-  const blockAnimContainer = document.getElementById('blockAnimContainer');
-  const itemPopImg = document.getElementById('itemPopImg');
-  const correctCircleBg = document.getElementById('correctCircleBg');
-  const collectionBar = document.getElementById('collectionBar');
-
-  let isAnimating = false;
-
-  function playSound(audioObj) {
-    if (audioObj) {
-      audioObj.currentTime = 0;
-      audioObj.play().catch(e => console.log('Audio play error:', e));
-    }
-  }
-
-  function updateCollectionBar(updatedItemId = null) {
-    collectionBar.innerHTML = '';
-    REWARD_ITEMS.forEach(item => {
-      const count = rewardCounts[item.id];
-      const badge = document.createElement('div');
-      badge.className = `item-count-badge ${count > 0 ? 'has-count' : ''}`;
-
-      if (updatedItemId === item.id) {
-        badge.classList.add('pop-anim');
-      }
-
-      badge.innerHTML = `
-        <img src="${item.img}" alt="${item.name}">
-        <span>×${count}</span>
-      `;
-      collectionBar.appendChild(badge);
-    });
-  }
-
-  function initSelects() {
-    totalSelect.innerHTML = '<option value="">？</option>';
-    for (let i = 1; i <= 99; i++) totalSelect.add(new Option(i, i));
-
-    divisorSelect.innerHTML = '<option value="">？</option>';
-    for (let i = 1; i <= 99; i++) divisorSelect.add(new Option(i, i));
-
-    quotientSelect.innerHTML = '<option value="">？</option>';
-    for (let i = 0; i <= 99; i++) quotientSelect.add(new Option(i, i));
-  }
-
-  function onNumberChange() {
-    quotientSelect.value = '';
-    render();
-  }
-
-  function onQuotientChange() {
-    const total = parseInt(totalSelect.value);
-    const divisor = parseInt(divisorSelect.value);
-    const q = parseInt(quotientSelect.value);
-
-    if (!isNaN(total) && !isNaN(divisor) && !isNaN(q) && q > 0) {
-      render(true);
-      flyCoinsToCharacters(total, divisor, q, () => {
-        render(false);
-      });
-    } else {
-      render();
-    }
-  }
-
-  function flyCoinsToCharacters(total, divisor, q, onComplete) {
-    if (isAnimating) return;
-    isAnimating = true;
-
-    const coinCells = allHeartsArea.querySelectorAll('.coin-cell');
-    const charBlocks = kidsArea.querySelectorAll('.char-block');
-
-    if (coinCells.length === 0 || charBlocks.length === 0) {
-      isAnimating = false;
-      onComplete();
+    if (isNaN(total) || isNaN(divisor) || isNaN(userQ) || isNaN(userR)) {
+      msg.innerText = '⚠️ すべての すうじ を 入力してね！';
+      msg.className = 'msg-box wrong';
       return;
     }
 
-    const totalToFly = divisor * q;
-    let completedCount = 0;
+    // 正しい答えの計算
+    const correctQ = Math.floor(total / divisor);
+    const correctR = total % divisor;
 
-    for (let i = 0; i < totalToFly; i++) {
-      const isRed = i >= total;
-      const targetCharIndex = Math.floor(i / q);
-      const targetBlock = charBlocks[targetCharIndex];
-
-      if (!targetBlock) continue;
-
-      const targetCoinsContainer = targetBlock.querySelector('.char-coins-container');
-      const targetRect = targetCoinsContainer ? targetCoinsContainer.getBoundingClientRect() : targetBlock.getBoundingClientRect();
-
-      let srcRect;
-      if (!isRed && coinCells[i]) {
-        srcRect = coinCells[i].getBoundingClientRect();
-      } else {
-        const lastCoin = coinCells[Math.min(i, total - 1)];
-        srcRect = lastCoin ? lastCoin.getBoundingClientRect() : { left: window.innerWidth / 2, top: 200, width: 24, height: 24 };
-      }
-
-      const flyingCoin = document.createElement('img');
-      flyingCoin.src = 'coin.png';
-      flyingCoin.className = `flying-coin ${isRed ? 'red-coin' : ''}`;
-      flyingCoin.style.left = `${srcRect.left}px`;
-      flyingCoin.style.top = `${srcRect.top}px`;
-
-      document.body.appendChild(flyingCoin);
-
-      setTimeout(() => {
-        if (!isRed && coinCells[i]) {
-          coinCells[i].classList.add('is-used');
-        }
-
-        flyingCoin.style.left = `${targetRect.left + (targetRect.width / 2) - 8}px`;
-        flyingCoin.style.top = `${targetRect.top + 4}px`;
-        flyingCoin.style.transform = 'scale(0.7)';
-
-        setTimeout(() => {
-          flyingCoin.remove();
-
-          const miniCoin = document.createElement('img');
-          miniCoin.src = 'coin.png';
-          miniCoin.className = `mini-coin ${isRed ? 'red-coin' : ''}`;
-          if (targetCoinsContainer) targetCoinsContainer.appendChild(miniCoin);
-
-          completedCount++;
-
-          if (completedCount >= totalToFly) {
-            isAnimating = false;
-            onComplete();
-          }
-        }, 400);
-      }, i * 35);
-    }
-
-    if (totalToFly === 0) {
-      isAnimating = false;
-      onComplete();
-    }
-  }
-
-  function resetAnswerOnly() {
-    quotientSelect.value = '';
-    render();
-  }
-
-  function resetAll() {
-    totalSelect.value = '';
-    divisorSelect.value = '';
-    quotientSelect.value = '';
-
-    REWARD_ITEMS.forEach(item => rewardCounts[item.id] = 0);
-    updateCollectionBar();
-
-    render();
-  }
-
-  function getRandomRewardItem() {
-    const totalWeight = REWARD_ITEMS.reduce((sum, item) => sum + item.weight, 0);
-    let randomNum = Math.random() * totalWeight;
-
-    for (const item of REWARD_ITEMS) {
-      if (randomNum < item.weight) {
-        return item;
-      }
-      randomNum -= item.weight;
-    }
-    return REWARD_ITEMS[0];
-  }
-
-  function triggerCorrectAnimation() {
-    blockAnimContainer.className = 'block-anim-container';
-    
-    const selectedItem = getRandomRewardItem();
-    itemPopImg.src = selectedItem.img;
-    itemPopImg.alt = selectedItem.name;
-
-    rewardCounts[selectedItem.id]++;
-    updateCollectionBar(selectedItem.id);
-    
-    void blockAnimContainer.offsetWidth;
-    blockAnimContainer.classList.add('play-anim', 'play-correct');
-
-    correctCircleBg.classList.remove('play-anim');
-    void correctCircleBg.offsetWidth;
-    correctCircleBg.classList.add('play-anim');
-
-    playSound(correctAudio);
-  }
-
-  function triggerWrongAnimation() {
-    blockAnimContainer.className = 'block-anim-container';
-    itemPopImg.src = 'bowser-shadow.png';
-    itemPopImg.alt = 'クッパ';
-
-    void blockAnimContainer.offsetWidth;
-    blockAnimContainer.classList.add('play-anim', 'play-wrong');
-
-    playSound(wrongAudio);
-  }
-
-  function createStrictCoinGrid(total, usedCount = 0) {
-    const grid = document.createElement('div');
-    grid.className = 'coins-grid-strict';
-
-    let currentRow = null;
-    let currentGroup5 = null;
-
-    for (let i = 0; i < total; i++) {
-      if (i % 10 === 0) {
-        currentRow = document.createElement('div');
-        currentRow.className = 'coin-row-strict';
-        grid.appendChild(currentRow);
-      }
-
-      if (i % 5 === 0) {
-        currentGroup5 = document.createElement('div');
-        currentGroup5.className = 'coin-group-5';
-        currentRow.appendChild(currentGroup5);
-      }
-
-      const cell = document.createElement('div');
-      cell.className = 'coin-cell';
-
-      if (i < usedCount) {
-        cell.classList.add('is-used');
-      }
-
-      const coinImg = document.createElement('img');
-      coinImg.src = 'coin.png';
-      coinImg.alt = 'コイン';
-      coinImg.className = 'coin-cell-img';
-
-      cell.appendChild(coinImg);
-      currentGroup5.appendChild(cell);
-    }
-
-    return grid;
-  }
-
-  function render(isPreAnimation = false) {
-    const totalVal = totalSelect.value;
-    const divisorVal = divisorSelect.value;
-    const qVal = quotientSelect.value;
-
-    const total = parseInt(totalVal);
-    const divisor = parseInt(divisorVal);
-    const q = parseInt(qVal);
-
-    allHeartsArea.innerHTML = '';
+    // キャラクター領域の描画
     kidsArea.innerHTML = '';
-    message.innerText = '';
-    message.className = 'message-box';
+    for (let i = 0; i < divisor; i++) {
+      const block = document.createElement('div');
+      block.className = 'char-block';
+      
+      const card = document.createElement('div');
+      card.className = 'char-card';
+      card.innerText = CHARS[i % CHARS.length];
 
-    const hasValidQ = !isNaN(q) && q > 0;
-    const totalDistributed = hasValidQ ? divisor * q : 0;
-    const usedCoinsInTotal = Math.min(total || 0, totalDistributed);
-
-    if (!isNaN(total) && total > 0) {
-      totalTitle.innerHTML = `${total}枚のコイン<img src="coin.png" class="inline-coin-img" alt="コイン">を`;
-      totalTitle.style.display = 'block';
-      allHeartsArea.appendChild(createStrictCoinGrid(total, isPreAnimation ? 0 : usedCoinsInTotal));
-    } else {
-      totalTitle.style.display = 'none';
-      allHeartsArea.innerHTML = '<span style="color:#888; font-size:13px;">「ぜんぶの コイン（÷のひだり）」を えらぼう！</span>';
-    }
-
-    if (!isNaN(divisor) && divisor > 0) {
-      kidsTitle.innerText = `${divisor}人で分けると`;
-      kidsTitle.style.display = 'block';
-
-      kidsArea.classList.add('is-grid');
-
-      let currentDistributedCoin = 0;
-
-      for (let i = 0; i < divisor; i++) {
-        const charInfo = CHARACTERS[i % CHARACTERS.length];
-
-        const block = document.createElement('div');
-        block.className = 'char-block';
-
-        const card = document.createElement('div');
-        card.className = 'char-card';
-        card.title = `${i + 1}人目: ${charInfo.name}`;
-
-        const img = document.createElement('img');
-        img.src = charInfo.img;
-        img.alt = charInfo.name;
-
-        card.appendChild(img);
-
-        const coinsContainer = document.createElement('div');
-        coinsContainer.className = 'char-coins-container';
-
-        if (hasValidQ && !isPreAnimation) {
-          for (let c = 0; c < q; c++) {
-            const isRed = currentDistributedCoin >= total;
-            const miniCoin = document.createElement('img');
-            miniCoin.src = 'coin.png';
-            miniCoin.className = `mini-coin ${isRed ? 'red-coin' : ''}`;
-            coinsContainer.appendChild(miniCoin);
-            currentDistributedCoin++;
-          }
-        }
-
-        block.appendChild(card);
-        block.appendChild(coinsContainer);
-        kidsArea.appendChild(block);
-      }
-    } else {
-      kidsTitle.style.display = 'none';
-      kidsArea.classList.remove('is-grid');
-      kidsArea.innerHTML = '<span style="color:#888; font-size:13px;">「わける にんずう（÷の みぎ）」を えらぼう！</span>';
-    }
-
-    if (isNaN(total) || isNaN(divisor) || qVal === '' || isNaN(q)) {
-      remainderBox.innerText = '？';
-      if (!isNaN(total) && !isNaN(divisor)) {
-        message.innerText = `ぜんぶで ${total}枚のコイン！1人に「なん枚ずつ」配る？`;
-      }
-      return;
-    }
-
-    if (isPreAnimation) return;
-
-    const rem = total - totalDistributed;
-
-    if (totalDistributed <= total) {
-      remainderBox.innerText = rem;
-
-      if (rem > 0) {
-        const canMakeMoreSets = Math.floor(rem / divisor);
-
-        if (canMakeMoreSets > 0) {
-          triggerWrongAnimation();
-          message.innerText = `💡 まだ あと ${canMakeMoreSets}枚ずつ ふやせるよ！数を ふやしてみよう！`;
-          message.classList.add('warn');
-        } else {
-          triggerCorrectAnimation();
-          message.innerText = `✨ 1人に ${q}枚ずつ 配ると、あまりは ${rem}枚 になるよ！`;
-          message.classList.add('blue');
-        }
-      } else {
-        triggerCorrectAnimation();
-        message.innerText = '🎉 PERFECT! ぴったり 分けられたね！★';
-        message.classList.add('blue');
+      const coins = document.createElement('div');
+      coins.className = 'char-coins';
+      // 入力された商の数だけコインを表示
+      for (let c = 0; c < userQ; c++) {
+        const dot = document.createElement('span');
+        dot.className = 'coin-dot';
+        coins.appendChild(dot);
       }
 
+      block.appendChild(card);
+      block.appendChild(coins);
+      kidsArea.appendChild(block);
+    }
+
+    // 判定
+    if (userQ === correctQ && userR === correctR) {
+      // 大正解！
+      hanamaru.className = 'hanamaru show';
+      msg.innerText = `🎉 だいせいかい！ すごいぞ！ (${userQ}枚ずつ分けられて、あまりは${userR}枚！)`;
+      msg.className = 'msg-box success';
+      setTimeout(() => hanamaru.className = 'hanamaru', 1200);
     } else {
-      triggerWrongAnimation();
-      remainderBox.innerText = '0';
-      const missingCount = totalDistributed - total;
-      message.innerText = `💦 あと ${missingCount}枚 コインが 足りないよ！（赤コイン）`;
+      // おしい！
+      msg.innerText = `💦 おしい！ マリオたちと一緒に もういちど たしかめてみよう！`;
+      msg.className = 'msg-box wrong';
     }
   }
-
-  initSelects();
-  updateCollectionBar();
-  render();
 </script>
+
 </body>
 </html>
