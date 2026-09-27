@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>マリオと わけっこ！ コインチャレンジ 🍄✨</title>
 
-  <!-- Galaxy等のホーム画面追加用アイコン設定 -->
+  <!-- ホーム画面追加用アイコン設定 -->
   <link rel="apple-touch-icon" href="peach-icon.png">
   <link rel="icon" type="image/png" href="peach-icon.png">
   <link rel="manifest" href="manifest.json">
@@ -61,12 +61,12 @@
       font-size: 13px;
       font-weight: 900;
       color: #000;
-      opacity: 0.4; /* 未獲得時は半透明 */
+      opacity: 0.4;
       transition: all 0.3s ease;
     }
 
     .item-count-badge.has-count {
-      opacity: 1; /* 獲得済みでくっきり表示 */
+      opacity: 1;
       background: #fff;
     }
 
@@ -348,10 +348,18 @@
       align-items: center;
       justify-content: center;
       user-select: none;
-      transition: all 0.2s;
+      transition: all 0.3s ease;
       border: 2px solid transparent;
       position: relative;
       box-sizing: border-box;
+    }
+
+    /* 配り終えた（使用済み）コインのグレーアウトスタイル */
+    .coin-cell.is-used {
+      filter: grayscale(100%);
+      opacity: 0.35;
+      background: #e0e0e0 !important;
+      border-color: #aaa !important;
     }
 
     .coin-cell.set-color-0 { background: #ffe3e3; border-color: #ff8787; }
@@ -421,6 +429,7 @@
       box-shadow: 0 3px 0 #000;
       padding: 4px;
       overflow: hidden;
+      position: relative;
     }
     .char-card img {
       width: 100%;
@@ -546,6 +555,17 @@
       animation: itemPopUpLarge 1.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.2s forwards;
     }
 
+    /* コインが飛ぶアニメーション用エレメント */
+    .flying-coin {
+      position: fixed;
+      width: 28px;
+      height: 28px;
+      pointer-events: none;
+      z-index: 300;
+      transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
+    }
+
     @keyframes containerFade {
       0% { opacity: 1; }
       85% { opacity: 1; }
@@ -604,7 +624,7 @@
     <span>÷</span>
     <select id="divisor" onchange="onNumberChange()"></select>
     <span>＝</span>
-    <select id="quotient" class="ans-select" onchange="render()"></select>
+    <select id="quotient" class="ans-select" onchange="onQuotientChange()"></select>
     <span>あまり</span>
     <div id="remainder" class="rem-box">？</div>
   </div>
@@ -664,7 +684,7 @@
     { name: 'フォックス', img: 'fox.png' }
   ];
 
-  // 正解時に飛び出すアイテムのリスト（idでカウント管理）
+  // 正解時に飛び出すアイテムのリスト
   const REWARD_ITEMS = [
     { id: 'mushroom', name: '赤キノコ', img: 'mushroom.png', rarity: 1, weight: 5 },
     { id: 'coin', name: 'コイン', img: 'coin.png', rarity: 1, weight: 5 },
@@ -675,11 +695,9 @@
     { id: 'red-star', name: '赤スター', img: 'red-star.png', rarity: 5, weight: 1 }
   ];
 
-  // アイテム獲得数カウント保持用オブジェクト
   const rewardCounts = {};
   REWARD_ITEMS.forEach(item => rewardCounts[item.id] = 0);
 
-  // MP3音声ファイル
   const correctAudio = new Audio('correct.mp3');
   const wrongAudio = new Audio('wrong.mp3');
 
@@ -702,6 +720,8 @@
   const correctCircleBg = document.getElementById('correctCircleBg');
   const collectionBar = document.getElementById('collectionBar');
 
+  let isAnimating = false;
+
   function playSound(audioObj) {
     if (audioObj) {
       audioObj.currentTime = 0;
@@ -709,7 +729,6 @@
     }
   }
 
-  // コレクションバーの初回描画および更新処理
   function updateCollectionBar(updatedItemId = null) {
     collectionBar.innerHTML = '';
     REWARD_ITEMS.forEach(item => {
@@ -745,6 +764,90 @@
     render();
   }
 
+  function onQuotientChange() {
+    const total = parseInt(totalSelect.value);
+    const divisor = parseInt(divisorSelect.value);
+    const q = parseInt(quotientSelect.value);
+
+    // アニメーション条件（全体の数が揃っている場合）
+    if (!isNaN(total) && !isNaN(divisor) && !isNaN(q) && q > 0) {
+      render(true); // まずアニメーション準備描画
+      flyCoinsToCharacters(total, divisor, q, () => {
+        render(false); // アニメーション完了後に最終確定描画
+      });
+    } else {
+      render();
+    }
+  }
+
+  // スーッと飛んで配られるコインアニメーション処理
+  function flyCoinsToCharacters(total, divisor, q, onComplete) {
+    if (isAnimating) return;
+    isAnimating = true;
+
+    // コインセルの取得
+    const coinCells = allHeartsArea.querySelectorAll('.coin-cell');
+    const charCards = kidsArea.querySelectorAll('.char-card');
+
+    if (coinCells.length === 0 || charCards.length === 0) {
+      isAnimating = false;
+      onComplete();
+      return;
+    }
+
+    const totalToFly = Math.min(total, divisor * q);
+    let completedCount = 0;
+
+    for (let i = 0; i < totalToFly; i++) {
+      const sourceCell = coinCells[i];
+      if (!sourceCell) continue;
+
+      const targetCharIndex = Math.floor(i / q) % divisor;
+      const targetCard = charCards[targetCharIndex];
+
+      const srcRect = sourceCell.getBoundingClientRect();
+      const targetRect = targetCard ? targetCard.getBoundingClientRect() : srcRect;
+
+      // 飛ぶコインエレメント生成
+      const flyingCoin = document.createElement('img');
+      flyingCoin.src = 'coin.png';
+      flyingCoin.className = 'flying-coin';
+      flyingCoin.style.left = `${srcRect.left}px`;
+      flyingCoin.style.top = `${srcRect.top}px`;
+      flyingCoin.style.width = `${srcRect.width}px`;
+      flyingCoin.style.height = `${srcRect.height}px`;
+
+      document.body.appendChild(flyingCoin);
+
+      // コイン発射タイミングを少しずつずらす
+      setTimeout(() => {
+        // 元のコインセルをグレーアウト
+        sourceCell.classList.add('is-used');
+
+        // アニメーション移動
+        flyingCoin.style.left = `${targetRect.left + targetRect.width / 2 - 12}px`;
+        flyingCoin.style.top = `${targetRect.top + targetRect.height / 2 - 12}px`;
+        flyingCoin.style.transform = 'scale(0.5)';
+        flyingCoin.style.opacity = '0.5';
+
+        setTimeout(() => {
+          flyingCoin.remove();
+          completedCount++;
+
+          if (completedCount >= totalToFly) {
+            isAnimating = false;
+            onComplete();
+          }
+        }, 500);
+      }, i * 40); // 40msずつ順次発射
+    }
+
+    if (totalToFly === 0) {
+      isAnimating = false;
+      onComplete();
+    }
+  }
+
   function resetAnswerOnly() {
     quotientSelect.value = '';
     render();
@@ -755,14 +858,12 @@
     divisorSelect.value = '';
     quotientSelect.value = '';
 
-    // 獲得カウントもクリア
     REWARD_ITEMS.forEach(item => rewardCounts[item.id] = 0);
     updateCollectionBar();
 
     render();
   }
 
-  // 重み付きランダム抽選関数
   function getRandomRewardItem() {
     const totalWeight = REWARD_ITEMS.reduce((sum, item) => sum + item.weight, 0);
     let randomNum = Math.random() * totalWeight;
@@ -779,12 +880,10 @@
   function triggerCorrectAnimation() {
     blockAnimContainer.className = 'block-anim-container';
     
-    // ランダム抽選で表示アイテム決定
     const selectedItem = getRandomRewardItem();
     itemPopImg.src = selectedItem.img;
     itemPopImg.alt = selectedItem.name;
 
-    // カウントの更新
     rewardCounts[selectedItem.id]++;
     updateCollectionBar(selectedItem.id);
     
@@ -809,7 +908,7 @@
     playSound(wrongAudio);
   }
 
-  function createStrictCoinGrid(total, groupSize = null, maxGroups = null) {
+  function createStrictCoinGrid(total, groupSize = null, maxGroups = null, isPreAnimation = false) {
     const grid = document.createElement('div');
     grid.className = 'coins-grid-strict';
 
@@ -840,11 +939,20 @@
       coinImg.className = 'coin-cell-img';
       cell.appendChild(coinImg);
 
+      // アニメーション完了後、配られた部分のセルをグレーアウト
+      if (!isPreAnimation && groupSize && groupSize > 0) {
+        if (i < maxAllocatedCoins) {
+          cell.classList.add('is-used');
+        }
+      }
+
       if (groupSize && groupSize > 0) {
         const setIndex = Math.floor(i / groupSize);
 
         if (i < maxAllocatedCoins && setIndex < maxGroups) {
-          cell.classList.add(`set-color-${setIndex % 6}`);
+          if (!cell.classList.contains('is-used')) {
+            cell.classList.add(`set-color-${setIndex % 6}`);
+          }
 
           if (i % groupSize === 0) {
             const badge = document.createElement('span');
@@ -870,7 +978,7 @@
     return grid;
   }
 
-  function render() {
+  function render(isPreAnimation = false) {
     const totalVal = totalSelect.value;
     const divisorVal = divisorSelect.value;
     const qVal = quotientSelect.value;
@@ -888,7 +996,7 @@
     if (!isNaN(total) && total > 0) {
       totalTitle.innerHTML = `${total}枚のコイン<img src="coin.png" class="inline-coin-img" alt="コイン">を`;
       totalTitle.style.display = 'block';
-      allHeartsArea.appendChild(createStrictCoinGrid(total));
+      allHeartsArea.appendChild(createStrictCoinGrid(total, qVal !== '' ? q : null, divisor, isPreAnimation));
     } else {
       totalTitle.style.display = 'none';
       allHeartsArea.innerHTML = '<span style="color:#888; font-size:13px;">「ぜんぶの コイン（÷のひだり）」を えらぼう！</span>';
@@ -929,6 +1037,9 @@
       }
       return;
     }
+
+    // アニメーション移動中の事前レンダリング時はグループ判定を保留
+    if (isPreAnimation) return;
 
     const coloredCount = divisor * q;
     const rem = total - coloredCount;
