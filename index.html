@@ -412,9 +412,9 @@
       animation: coinPopIn 0.2s ease-out;
     }
 
-    /* 赤色コイン（不足分） */
+    /* ★修正: 赤色コイン（不足分）を鮮やかな赤色にするフィルター */
     .mini-coin.red-coin {
-      filter: hue-rotate(140deg) saturate(3) brightness(0.9);
+      filter: sepia(100%) hue-rotate(310deg) saturate(8) brightness(0.9);
     }
 
     @keyframes coinPopIn {
@@ -551,8 +551,9 @@
       transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
       filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
     }
+    /* ★修正: 飛ぶ赤コインも修正 */
     .flying-coin.red-coin {
-      filter: hue-rotate(140deg) saturate(3) brightness(0.9) drop-shadow(0 2px 4px rgba(0,0,0,0.4));
+      filter: sepia(100%) hue-rotate(310deg) saturate(8) brightness(0.9) drop-shadow(0 2px 4px rgba(0,0,0,0.4));
     }
 
     @keyframes containerFade {
@@ -733,16 +734,15 @@
     const q = parseInt(quotientSelect.value);
 
     if (!isNaN(total) && !isNaN(divisor) && !isNaN(q) && q > 0) {
-      render(true); // アニメーション用レイアウト構築
+      render(true);
       flyCoinsToCharacters(total, divisor, q, () => {
-        render(false); // 完了後に確定描画・判定
+        render(false);
       });
     } else {
       render();
     }
   }
 
-  // コインが各キャラクターのもとへ飛ばされるアニメーション
   function flyCoinsToCharacters(total, divisor, q, onComplete) {
     if (isAnimating) return;
     isAnimating = true;
@@ -760,7 +760,7 @@
     let completedCount = 0;
 
     for (let i = 0; i < totalToFly; i++) {
-      const isRed = i >= total; // 全体コインを超えた分は赤コイン
+      const isRed = i >= total;
       const targetCharIndex = Math.floor(i / q);
       const targetBlock = charBlocks[targetCharIndex];
 
@@ -773,12 +773,10 @@
       if (!isRed && coinCells[i]) {
         srcRect = coinCells[i].getBoundingClientRect();
       } else {
-        // 赤コインは画面中央（または末尾のコイン）から飛び出す
         const lastCoin = coinCells[Math.min(i, total - 1)];
         srcRect = lastCoin ? lastCoin.getBoundingClientRect() : { left: window.innerWidth / 2, top: 200, width: 24, height: 24 };
       }
 
-      // 飛ぶコインエレメント生成
       const flyingCoin = document.createElement('img');
       flyingCoin.src = 'coin.png';
       flyingCoin.className = `flying-coin ${isRed ? 'red-coin' : ''}`;
@@ -788,12 +786,10 @@
       document.body.appendChild(flyingCoin);
 
       setTimeout(() => {
-        // 全体コインのグレー化（持ちコインの範囲内）
         if (!isRed && coinCells[i]) {
           coinCells[i].classList.add('is-used');
         }
 
-        // 移動アニメーション
         flyingCoin.style.left = `${targetRect.left + (targetRect.width / 2) - 8}px`;
         flyingCoin.style.top = `${targetRect.top + 4}px`;
         flyingCoin.style.transform = 'scale(0.7)';
@@ -801,7 +797,6 @@
         setTimeout(() => {
           flyingCoin.remove();
 
-          // キャラクター下に小さなコインを追加表示
           const miniCoin = document.createElement('img');
           miniCoin.src = 'coin.png';
           miniCoin.className = `mini-coin ${isRed ? 'red-coin' : ''}`;
@@ -883,7 +878,6 @@
     playSound(wrongAudio);
   }
 
-  // シンプルな全体のコイン表示作成
   function createStrictCoinGrid(total, usedCount = 0) {
     const grid = document.createElement('div');
     grid.className = 'coins-grid-strict';
@@ -907,7 +901,6 @@
       const cell = document.createElement('div');
       cell.className = 'coin-cell';
 
-      // 配り終えた分だけグレーアウト
       if (i < usedCount) {
         cell.classList.add('is-used');
       }
@@ -942,7 +935,6 @@
     const totalDistributed = hasValidQ ? divisor * q : 0;
     const usedCoinsInTotal = Math.min(total || 0, totalDistributed);
 
-    // 1. 全体コイン描画
     if (!isNaN(total) && total > 0) {
       totalTitle.innerHTML = `${total}枚のコイン<img src="coin.png" class="inline-coin-img" alt="コイン">を`;
       totalTitle.style.display = 'block';
@@ -952,7 +944,6 @@
       allHeartsArea.innerHTML = '<span style="color:#888; font-size:13px;">「ぜんぶの コイン（÷のひだり）」を えらぼう！</span>';
     }
 
-    // 2. キャラクター＆下部のコイン描画
     if (!isNaN(divisor) && divisor > 0) {
       kidsTitle.innerText = `${divisor}人で分けると`;
       kidsTitle.style.display = 'block';
@@ -980,7 +971,6 @@
         const coinsContainer = document.createElement('div');
         coinsContainer.className = 'char-coins-container';
 
-        // 商が入力されており、アニメーション中ではない場合に配られたコインを表示
         if (hasValidQ && !isPreAnimation) {
           for (let c = 0; c < q; c++) {
             const isRed = currentDistributedCoin >= total;
@@ -1012,7 +1002,6 @@
 
     if (isPreAnimation) return;
 
-    // 判定ロジック
     const rem = total - totalDistributed;
 
     if (totalDistributed <= total) {
