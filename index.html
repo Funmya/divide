@@ -193,12 +193,24 @@
     }
     select:disabled {
       background: #ccc;
+      color: #666;
       cursor: not-allowed;
       opacity: 0.7;
     }
 
-    .ans-select { background-color: #fff3bf; }
-    .rem-select { background-color: #2ec4b6; color: #fff; }
+    .ans-select { 
+      background-color: #fff3bf; 
+      color: #000;
+    }
+    /* ★ あまりの選択肢を見やすく修正 */
+    .rem-select { 
+      background-color: #ffe066; 
+      color: #000000; 
+    }
+    select option {
+      background-color: #ffffff;
+      color: #000000;
+    }
 
     .btn-area {
       display: flex;
@@ -718,7 +730,6 @@
     updateRemainderSelectOptions();
   }
 
-  // あまりの選択肢（割る数未満）を更新する処理
   function updateRemainderSelectOptions() {
     const total = parseInt(totalSelect.value);
     const divisor = parseInt(divisorSelect.value);
@@ -727,14 +738,12 @@
     const currentRemVal = remainderSelect.value;
     remainderSelect.innerHTML = '<option value="">？</option>';
 
-    // 商が未入力、または割る数・全体が未入力のときは無効化
     if (isNaN(total) || isNaN(divisor) || qVal === '') {
       remainderSelect.disabled = true;
       return;
     }
 
     remainderSelect.disabled = false;
-    // あまりの選択肢の上限（通常は 割る数 - 1）
     const maxRemainder = Math.min(divisor - 1, total);
 
     for (let i = 0; i <= maxRemainder; i++) {
@@ -1030,7 +1039,6 @@
       kidsArea.innerHTML = '<span style="color:#888; font-size:13px;">「わける にんずう（÷の みぎ）」を えらぼう！</span>';
     }
 
-    // 案内メッセージの制御
     if (isNaN(total) || isNaN(divisor)) {
       return;
     }
@@ -1048,7 +1056,6 @@
 
     if (isPreAnimation) return;
 
-    // ★ 商とあまりの両方が入力された場合のみ判定を実行
     const correctQ = Math.floor(total / divisor);
     const correctRem = total % divisor;
 
