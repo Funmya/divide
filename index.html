@@ -219,7 +219,7 @@
       z-index: 20;
     }
 
-    /* 選択肢/入力ボックス共通（数字が見やすいようにシャドウを削除） */
+    /* 選択肢/入力ボックス共通 */
     .num-input-box {
       font-family: inherit;
       font-size: 18px;
@@ -891,7 +891,7 @@
 
   // 入力状態の変数
   let inputMode = 'select'; // 'select' または 'keypad'
-  let activeTarget = 'total'; // 電卓モード切替時の初期位置を「total（÷の左）」に変更
+  let activeTarget = 'total'; // 電卓モード切替時の初期位置
   let formulaValues = { total: '', divisor: '', quotient: '', remainder: '' };
 
   const formulaBox = document.getElementById('formulaBox');
@@ -946,7 +946,7 @@
     } else {
       btn.innerText = '🔢 にゅうりょくほうしき：でんたく';
       keypadContainer.style.display = 'block';
-      activeTarget = 'total'; // 電卓モード選択時はカーソルを「÷の左（total）」にセット
+      activeTarget = 'total';
     }
     renderFormulaUI();
     render();
@@ -986,7 +986,6 @@
 
       updateSelectRemainderOptions();
     } else {
-      // 電卓モード
       const createBox = (id, extraClass = '') => {
         const box = document.createElement('div');
         box.id = id;
@@ -1062,7 +1061,7 @@
     } else if (numStr === 'BS') {
       currentVal = currentVal.slice(0, -1);
     } else {
-      if (currentVal.length < 2) { // 最大2桁まで
+      if (currentVal.length < 2) {
         currentVal = currentVal === '0' ? numStr : currentVal + numStr;
       }
     }
@@ -1380,17 +1379,29 @@
       return;
     }
 
+    if (isPreAnimation) return;
+
+    const correctQ = Math.floor(total / divisor);
+    const correctRem = total % divisor;
+
+    // ★ 変更点: あまりが0で、商が正しい数値の場合は即座に正解演出
+    if (correctRem === 0 && q === correctQ) {
+      formulaValues.remainder = '0';
+      renderFormulaUI();
+      triggerCorrectAnimation();
+      message.innerText = '🎉 PERFECT! ぴったり 分けられたね！★';
+      message.classList.add('blue');
+      return;
+    }
+
+    // あまりが存在する場合（または誤答時）、あまりが未入力なら入力促進メッセージ
     if (remVal === '' || isNaN(remUser)) {
       message.innerText = `コインを配ったよ！あまりは「なん枚」になるかな？`;
       message.classList.add('blue');
       return;
     }
 
-    if (isPreAnimation) return;
-
-    const correctQ = Math.floor(total / divisor);
-    const correctRem = total % divisor;
-
+    // 商とあまりが両方揃った場合の判定
     if (q === correctQ && remUser === correctRem) {
       triggerCorrectAnimation();
       if (correctRem > 0) {
