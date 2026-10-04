@@ -219,7 +219,7 @@
       z-index: 20;
     }
 
-    /* 選択肢/入力ボックス共通 */
+    /* 選択肢/入力ボックス共通（数字が見やすいようにシャドウを削除） */
     .num-input-box {
       font-family: inherit;
       font-size: 18px;
@@ -228,11 +228,12 @@
       border: 3px solid #000;
       border-radius: 10px;
       outline: none;
-      color: #000;
-      background: #fff;
+      color: #000000;
+      background: #ffffff;
       padding: 2px 8px;
       cursor: pointer;
-      box-shadow: 0 3px 0 #888;
+      box-shadow: none;
+      text-shadow: none;
       min-width: 50px;
       height: 38px;
       display: inline-flex;
@@ -241,7 +242,6 @@
       user-select: none;
     }
 
-    /* モード選択時の表示制御 */
     select.num-input-box {
       appearance: none;
       -webkit-appearance: none;
@@ -249,21 +249,24 @@
 
     div.num-input-box.keypad-target {
       background: #ffffff;
-      color: #000;
+      color: #000000;
+      text-shadow: none;
     }
     div.num-input-box.keypad-target.active {
       border-color: #2ec4b6;
       background: #e0fbf6;
-      box-shadow: 0 0 8px #2ec4b6, 0 3px 0 #000;
+      box-shadow: 0 0 8px #2ec4b6;
     }
 
     .ans-select { 
       background-color: #fff3bf; 
-      color: #000;
+      color: #000000;
+      text-shadow: none;
     }
     .rem-select { 
       background-color: #ffe066; 
       color: #000000; 
+      text-shadow: none;
     }
     select option {
       background-color: #ffffff;
@@ -394,7 +397,6 @@
       z-index: 20;
     }
 
-    /* コイングリッド構造 */
     .coins-grid-strict {
       display: flex;
       flex-direction: column;
@@ -440,7 +442,6 @@
       pointer-events: none;
     }
 
-    /* 配り終えた（使用済み）コインのグレーアウト */
     .coin-cell.is-used {
       filter: grayscale(100%);
       opacity: 0.3;
@@ -454,7 +455,6 @@
       align-items: center;
     }
 
-    /* キャラクター表示エリア */
     .kids-area {
       display: flex;
       align-items: flex-start;
@@ -499,7 +499,6 @@
       object-fit: contain;
     }
 
-    /* キャラクター下のコイン表示スペース */
     .char-coins-container {
       display: flex;
       flex-wrap: wrap;
@@ -516,7 +515,6 @@
       animation: coinPopIn 0.2s ease-out;
     }
 
-    /* 赤色コイン（不足分） */
     .mini-coin.red-coin {
       filter: sepia(100%) hue-rotate(310deg) saturate(8) brightness(0.9);
     }
@@ -543,7 +541,6 @@
     .message-box.blue { color: #2ec4b6; }
     .message-box.warn { color: #ff9f1c; }
 
-    /* ハテナブロック演出 */
     .block-anim-container {
       position: fixed;
       top: 50%;
@@ -645,7 +642,6 @@
       animation: itemPopUpLarge 1.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.2s forwards;
     }
 
-    /* 飛ぶコインアニメーション用 */
     .flying-coin {
       position: fixed;
       width: 24px;
@@ -659,7 +655,6 @@
       filter: sepia(100%) hue-rotate(310deg) saturate(8) brightness(0.9) drop-shadow(0 2px 4px rgba(0,0,0,0.4));
     }
 
-    /* ポップアップ（モーダル） */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -896,7 +891,7 @@
 
   // 入力状態の変数
   let inputMode = 'select'; // 'select' または 'keypad'
-  let activeTarget = 'quotient'; // 電卓モード時に選択されている入力ターゲット ('total', 'divisor', 'quotient', 'remainder')
+  let activeTarget = 'total'; // 電卓モード切替時の初期位置を「total（÷の左）」に変更
   let formulaValues = { total: '', divisor: '', quotient: '', remainder: '' };
 
   const formulaBox = document.getElementById('formulaBox');
@@ -951,6 +946,7 @@
     } else {
       btn.innerText = '🔢 にゅうりょくほうしき：でんたく';
       keypadContainer.style.display = 'block';
+      activeTarget = 'total'; // 電卓モード選択時はカーソルを「÷の左（total）」にセット
     }
     renderFormulaUI();
     render();
